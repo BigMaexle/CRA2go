@@ -1,8 +1,9 @@
 package com.example.cra2go
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,19 +16,34 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.cra2go.ui.theme.CRA2goTheme
+import java.security.AccessController.getContext
 
 
 class MainActivity : ComponentActivity() {
 
     private val TAG = "Main"
 
-    private var mRequestQueue: RequestQueue? = null
-    private var mStringRequest: StringRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestQueue.add(stringRequest)
+
+
+        val ctx : Context = this
+        val url = "https://httpbin.org/get"
+        var queue = Volley.newRequestQueue(ctx)
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                Log.i(TAG, response.toString())
+            },
+            { error ->
+                Log.i(TAG, error.toString())
+            })
+
+
+
+
+        queue.add(stringRequest)
 
         setContent {
 
@@ -44,15 +60,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    val url = "https://api.example.com/data"
-    var requestQueue = Volley.newRequestQueue(this.baseContext)
 
-    val stringRequest = StringRequest(Request.Method.GET, url,
-        { response ->
-            // Display the first 500 characters of the response string.
-            Log.i(TAG, "hat geklappt: ")
-        },
-        { Log.i(TAG, "hat nist geklappt: ") })
+
 
 
 }

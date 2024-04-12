@@ -67,6 +67,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.google.android.gms:play-services-cronet:18.0.1")
-    implementation("org.chromium.net:cronet-api:101.4951.41")
 }
