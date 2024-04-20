@@ -34,72 +34,17 @@ class FlightEvent(
 ) {
 }
 
-@Composable
-fun DisplayFlight(flight: FlightEvent) {
-
-    Card (
-        modifier = Modifier.width(200.dp)
-    ){
-        Column (
-            Modifier.padding(8.dp)
-        ){
-            ShowFlightAirportRow(
-                DepAirport = flight.depatureAirport,
-                ArrAirport = flight.destinationAirport
-            )
-            ShowFlightTimes(offBlock = flight.offblock, onBlock = flight.onblock)
-        }
-
-
-    }
-}
-
-@Composable
-fun ShowFlightAirportRow(DepAirport:String,ArrAirport:String){
-    Row (
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        Column (
-            modifier = Modifier
-        ){
-            Text(text = "Departure", fontSize = 8.sp,textAlign = TextAlign.Left)
-            Text(text = DepAirport, textAlign = TextAlign.Left)
-        }
-        Spacer(Modifier.weight(1f))
-        Column (modifier = Modifier){
-            Text(text = "Arrival", fontSize = 8.sp,textAlign = TextAlign.End)
-            Text(text = ArrAirport,textAlign = TextAlign.End)
-        }
-    }
-
-}
-
-@Composable
-fun ShowFlightTimes(offBlock: Time,onBlock: Time){
-    CompositionLocalProvider (
-        LocalTextStyle provides TextStyle(fontSize = 5.sp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = offBlock.toString())
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = onBlock.toString())
-        }
-    }
-}
 
 @Preview (showBackground = true)
 @Composable
 fun ShowSampleFlight(){
     val exampleflight = FlightEvent(
-        date = Date(2024,4,12),
+        date = Date(2024,4,1),
         offblock = Time(12,0,0),
         onblock = Time(15,0,0),
         depatureAirport = "FRA",
         destinationAirport = "JFK"
     )
     CRA2goTheme {
-        DisplayFlight(exampleflight)
     }
 }
