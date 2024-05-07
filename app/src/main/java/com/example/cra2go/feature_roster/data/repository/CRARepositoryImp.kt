@@ -1,80 +1,33 @@
 package com.example.cra2go.feature_roster.data.repository
 
-import android.icu.util.GregorianCalendar
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.StringRequest
 import com.example.cra2go.feature_roster.data.data_source.DutyEventDao
-import com.example.cra2go.feature_roster.domain.model.DutyEvent
 import com.example.cra2go.feature_roster.domain.repository.CRARepository
-import com.example.cra2go.feature_roster.domain.utils.DateConverter
 import com.example.cra2go.feature_roster.domain.utils.DutySchedule
-import com.example.cra2go.feature_roster.domain.utils.RosterDay
-import com.google.gson.Gson
-import java.util.Date
-import java.util.Scanner
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
+class CRARepositoryImp (
+    private val dao: DutyEventDao,
+    ):CRARepository {
 
-class CRARepositoryImp(
-    private val dao : DutyEventDao,
-    private val queue :RequestQueue
-): CRARepository {
+    val rf = Retrofit.Builder()
+        .baseUrl("https://api-sandbox.lufthansa.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(CRARepository::class.java)
+    override suspend fun getSchedule(
+        fromDate: String,
+        toDate: String,
+        token: String
+    ): Response<DutySchedule> {
 
-    var gson: Gson = Gson()
-    override fun getSchedule(url:String) {
-
-
-        var craresponse : String
-        var dutySchedule: DutySchedule
-
-        val stringRequest = StringRequest(
-            Request.Method.GET,
-            url,
-            { response ->
-
-                craresponse = response
-                dutySchedule = gson.fromJson(craresponse,DutySchedule::class.java)
-
-
-                val listoffdays : List<RosterDay> = dutySchedule.rosterDays
-                listoffdays.onEach { day ->
-
-                   day.events.onEach { event ->
-                           val flight: DutyEvent = DutyEvent(
-                               _links = event._links,
-                               startTimeZoneOffset = event.startTimeZoneOffset,
-                               endTimeZoneOffset = event.endTimeZoneOffset,
-                               startTime = DateConverter.convertToTimestamp(event.startTime),
-                               endTime = DateConverter.convertToTimestamp(event.endTime),
-                               eventAttributes = event.eventAttributes,
-                               eventCategory = event.eventCategory,
-                               endLocation = event.endLocation,
-                               eventType = event.eventType,
-                               startLocation = event.startLocation,
-                               eventDetails = event.eventDetails,
-                               wholeDay = event.wholeDay
-                           )
-                           dao.insertDutyEvent(flight)
-
-
-                   }
-
-                }
-
-
-            },
-            { println("That didn't work!")}
-        )
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest)
+        val response = rf.getSchedule(fromDate,toDate,token)
+        return response
 
     }
 
-    fun testfun(){
-        println()
+    override fun handleResponse(response: String) {
+        println("nix")
     }
-
 }

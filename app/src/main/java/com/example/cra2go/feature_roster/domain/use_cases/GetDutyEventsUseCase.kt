@@ -10,6 +10,6 @@ class GetDutyEventsUseCase (
 ){
 
     operator fun invoke(): Flow<List<DutyEvent>>{
-        return repository.getDutyEvents().map { events -> events.sortedBy { it.startTime } }
+        return repository.getDutyEvents().map { events -> events.sortedBy { it.day } }
     }
 }

@@ -10,6 +10,7 @@ import java.util.Date
 
 @Entity
 data class DutyEvent(
+    val day: Date,
     val _links: Links?,
     val endLocation: String?,
     val endTime: Date?,

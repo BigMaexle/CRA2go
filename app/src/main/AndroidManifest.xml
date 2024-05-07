@@ -23,10 +23,31 @@
             android:theme="@style/Theme.CRA2go">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+
             </intent-filter>
         </activity>
+        <activity
+            android:name=".login.presentation.LoginActivity">
+
+        </activity>
+        <activity
+            android:name=".login.presentation.AuthRecievedActivitiy"
+
+            android:exported="true"
+            tools:node="replace">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"
+                    android:host="com.example.cra2go"/>
+            </intent-filter>
+        </activity>
+
+
+
     </application>
 
 </manifest>

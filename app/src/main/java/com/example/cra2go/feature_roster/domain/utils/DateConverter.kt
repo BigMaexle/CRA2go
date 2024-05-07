@@ -10,17 +10,20 @@ import java.util.Date
 
 
 object DateConverter {
-    fun convertfromDateStamp(dateString: String): Date? {
+    fun convertfromDateStamp(dateString: String): Date {
         val formatter = SimpleDateFormat("yyyy-MM-dd'Z'")
         return try {
             formatter.parse(dateString)
         } catch (e: ParseException) {
             e.printStackTrace()
-            null // Return null in case of parsing failure
+            return Date(0)
         }
     }
 
-    fun convertToTimestamp(dateString: String): Date? {
+    fun convertToTimestamp(dateString: String?): Date? {
+        if (dateString == null){
+            return null
+        }
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         return try {
             formatter.parse(dateString)
