@@ -6,36 +6,62 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cra2go"
+    namespace = "org.bmstudio.cra2go"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.cra2go"
+        applicationId = "org.bmstudio.cra2go"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
 
-        manifestPlaceholders["appAuthRedirectScheme"] =  "https://com.example.cra2go"
+        manifestPlaceholders["appAuthRedirectScheme"] = "org.bmstudio.cra2go"
+
+        android.buildFeatures.buildConfig  = true
+
 
     }
 
 
 
     buildTypes {
+        debug {
+            buildConfigField("String","BASEURLAPI","\"https://api-sandbox.lufthansa.com/\"");
+            buildConfigField("String","BUILDVERSION","\"MOCK\"");
+            buildConfigField("String","AUTHENDPOINT","\"https://oauth-test.lufthansa.com/lhcrew/oauth/authorize\"");
+            buildConfigField("String","TOKENENDPOINT","\"https://oauth-test.lufthansa.com/lhcrew/oauth/token\"")
+            buildConfigField("String","CLIENT_ID","\"st53sq4qnbrvbbbtedgqk3dc\"");
+            buildConfigField("String","CLIENT_SECRET","\"rpgtUArDew\"");
+            buildConfigField("String","SCOPE","\"https://mock.cms.fra.dlh.de/publicCrewApiDev\"");
+            buildConfigField("String","RESOURCEURL","\"/v1/flight_operations/crew_services/mock/COMMON_DUTY_EVENTS\"");
+        }
         release {
+
+            buildConfigField("String","BUILDVERSION","\"PROD\"");
+            buildConfigField("String","BASEURLAPI","\"https://api.lufthansa.com/\"");
+            buildConfigField("String","AUTHENDPOINT","\"https://oauth.lufthansa.com/lhcrew/oauth/authorize\"");
+            buildConfigField("String","TOKENENDPOINT","\"https://oauth.lufthansa.com/lhcrew/oauth/token\"");
+            buildConfigField("String","CLIENT_ID","\"am39f2kvrg8u6gvatfbfkyre\"");
+            buildConfigField("String","CLIENT_SECRET","\"CfsJTAKcpv\"");
+            buildConfigField("String","SCOPE","\"https://cms.fra.dlh.de/publicCrewApi\"");
+            buildConfigField("String","RESOURCEURL","\"/v1/flight_operations/crew_services/COMMON_DUTY_EVENTS\"");
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
