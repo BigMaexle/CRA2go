@@ -28,6 +28,7 @@ retrofit = "2.11.0"
 roomCompiler = "2.6.1"
 roomRuntime = "2.6.1"
 volley = "1.2.1"
+composePreviewRenderer = "0.0.1-alpha01"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -66,6 +67,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 play-services-cronet = { module = "com.google.android.gms:play-services-cronet", version.ref = "playServicesCronet" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+compose-preview-renderer = { group = "com.android.tools.compose", name = "compose-preview-renderer", version.ref = "composePreviewRenderer" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

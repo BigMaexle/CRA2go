@@ -26,20 +26,25 @@ class UpdateDutyEventsFromCRAUseCase(
         val sdf = SimpleDateFormat("yyyy-MM-dd'Z'")
         val c: Calendar = Calendar.getInstance()
         c.setTime(currentdate)
-
+        c.set(Calendar.DAY_OF_MONTH,1)
         val fromdate = sdf.format(c.time)
+        c.setTime(currentdate)
 
-        c.add(Calendar.DATE, 30) // number of days to add
-
-        val todate = sdf.format(c.time)
+        val todate = sdf.format(getEndOfNextMonth(c.time))
 
         val response = try {
+            Log.i(TAG,"trying to recieve Duty Plan from CRA")
             craRepository.getSchedule(fromdate, todate, token)
         } catch (e: IOException) {
             Log.e(TAG, "IOException, you might not have internet connection")
             return
         } catch (e: HttpException) {
             Log.e(TAG, "HttpException, unexpected response")
+            return
+        } catch (e: Exception) {
+            Log.e(TAG, "Something wrong")
+            Log.e(TAG,e.cause.toString())
+            Log.e(TAG,e.message.toString())
             return
         }
         if (response.isSuccessful && response.body() != null) {
@@ -53,6 +58,11 @@ class UpdateDutyEventsFromCRAUseCase(
 
     suspend fun insertCRADutyEvents(schedule: DutySchedule) {
 
+        schedule.rosterDays.onEach { day ->
+            day.events.onEach { event ->
+                Log.i(TAG,event.toString())
+            }
+        }
         Log.i(TAG, "Inserting Duty Events")
 
 
@@ -121,5 +131,18 @@ class UpdateDutyEventsFromCRAUseCase(
         }
 
 
+    }
+
+    private fun getEndOfNextMonth(date: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+
+        // Add one month
+        calendar.add(Calendar.MONTH, 1)
+
+        // Set the day to the last day of the month
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+
+        return calendar.time
     }
 }

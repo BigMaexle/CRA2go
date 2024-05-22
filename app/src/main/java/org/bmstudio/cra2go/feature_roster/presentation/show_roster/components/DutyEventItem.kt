@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,17 +29,11 @@ import java.util.Date
 @Composable
 fun DutyEventItem(dutyevent: DutyEvent) {
 
-    if (dutyevent.eventType == "HOTEL") {
-        return
-    }
-    if (dutyevent.eventType == "BRIEFING") {
-        return
-    }
+
     if (dutyevent.eventDetails == "X") {
         return
     }
 
-    val formatter = SimpleDateFormat("EE dd.MM.yy")
 
     Box(
         modifier = Modifier
@@ -48,6 +43,23 @@ fun DutyEventItem(dutyevent: DutyEvent) {
         Column(
             Modifier.padding(8.dp)
         ) {
+            if (dutyevent.eventType == "BRIEFING"){
+
+                val formatter = SimpleDateFormat("HH:mm")
+                val c = Calendar.getInstance()
+                c.time = dutyevent.startTime!!
+                c.add(Calendar.MINUTE,-dutyevent.startTimeZoneOffset!!)
+                val lt = c.time
+
+                Text(modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(2.dp),
+                    text = "Briefing ${dutyevent.startLocation!!} - " +
+                            "${formatter.format(lt)} LT",
+                    textAlign = TextAlign.Center)
+
+                Divider()
+            }
             if (dutyevent.eventType == "FLIGHT") {
                 ShowFlightAirportRow(
                     DepAirport = dutyevent.startLocation,
@@ -62,14 +74,29 @@ fun DutyEventItem(dutyevent: DutyEvent) {
                             .fillMaxWidth(1f)
                             .padding(20.dp),
                         text = it,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
                     )
                 }
             }
-            if (dutyevent.wholeDay == false) {
+            if (dutyevent.eventType == "HOTEL") {
+                dutyevent.startLocation?.let {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(1f)
+                            .padding(20.dp),
+                        text = it,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
+                    )
+                }
+            }
+            if (dutyevent.wholeDay == false && dutyevent.eventType != "HOTEL" && dutyevent.eventType != "BRIEFING") {
+
+
                 ShowDutyTimes(
-                    startTime = dutyevent.startTime!!,
-                    endTime = dutyevent.endTime!!,
+                    startTime = dutyevent.startTime,
+                    endTime = dutyevent.endTime,
                     startoffset = dutyevent.startTimeZoneOffset,
                     endoffset = dutyevent.endTimeZoneOffset,
                     dayofevent = dutyevent.day
@@ -81,6 +108,7 @@ fun DutyEventItem(dutyevent: DutyEvent) {
     }
 }
 
+
 @Composable
 fun ShowFlightAirportRow(DepAirport: String?, ArrAirport: String?, flightno: String?) {
 
@@ -90,9 +118,9 @@ fun ShowFlightAirportRow(DepAirport: String?, ArrAirport: String?, flightno: Str
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = "Departure", fontSize = 8.sp, textAlign = TextAlign.Left)
+            Text(text = "Departure", fontSize = 9.sp, textAlign = TextAlign.Left)
             if (DepAirport != null) {
-                Text(text = DepAirport, textAlign = TextAlign.Left)
+                Text(text = DepAirport, textAlign = TextAlign.Left, fontSize = 20.sp)
             }
         }
 
@@ -100,14 +128,15 @@ fun ShowFlightAirportRow(DepAirport: String?, ArrAirport: String?, flightno: Str
             Text(
                 text = it,
                 modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp
             )
         }
 
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-            Text(text = "Arrival", fontSize = 8.sp, textAlign = TextAlign.Right)
+            Text(text = "Arrival", fontSize = 9.sp, textAlign = TextAlign.Right)
             if (ArrAirport != null) {
-                Text(text = ArrAirport, textAlign = TextAlign.End)
+                Text(text = ArrAirport, textAlign = TextAlign.End, fontSize = 20.sp)
             }
         }
     }
@@ -116,7 +145,7 @@ fun ShowFlightAirportRow(DepAirport: String?, ArrAirport: String?, flightno: Str
 
 
 @Composable
-fun ShowDutyTimes(startTime: Date, endTime: Date, startoffset: Int?, endoffset: Int?,dayofevent: Date) {
+fun ShowDutyTimes(startTime: Date?, endTime: Date?, startoffset: Int?, endoffset: Int?,dayofevent: Date) {
     val formatter = SimpleDateFormat("HH:mm")
     val day = Calendar.getInstance()
     day.time = dayofevent
@@ -134,55 +163,74 @@ fun ShowDutyTimes(startTime: Date, endTime: Date, startoffset: Int?, endoffset: 
 
 
     CompositionLocalProvider(
-        LocalTextStyle provides TextStyle(fontSize = 12.sp)
+        LocalTextStyle provides TextStyle(fontSize = 14.sp)
     ) {
         Column {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                val c_start = Calendar.getInstance()
-                c_start.time = startTime
+                if (startTime != null){
+                    val c_start = Calendar.getInstance()
+                    c_start.time = startTime
+                    val off = formatter.format(c_start.time)
+                    Text(text = "$off UTC")
+                } else {
+                    Text(text = "")}
 
-                val c_end = Calendar.getInstance()
-                c_end.time = endTime
 
-                val off = formatter.format(c_start.time)
+                
 
-                Text(text = "$off UTC")
+
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                var on = formatter.format(c_end.time)
-                on = if (isNextDay(c_end)) "$on UTC (+1)" else "$on UTC"
+                if (endTime != null){
+                    val c_end = Calendar.getInstance()
+                    c_end.time = endTime
+                    var on = formatter.format(c_end.time)
+                    on = if (isNextDay(c_end)) "$on UTC (+1)" else "$on UTC"
+                    Text(text = on)
+                }  else{ Text(text = "")}
 
-                Text(text = on)
+
             }
-            CompositionLocalProvider(LocalTextStyle provides TextStyle(fontSize = 10.sp)) {
+            CompositionLocalProvider(LocalTextStyle provides TextStyle(fontSize = 12.sp)) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    
+                    if (startTime != null) {
+                        val c_start = Calendar.getInstance()
+                        c_start.time = startTime
+                        if (startoffset != null) {
+                            c_start.add(Calendar.MINUTE, -startoffset)
+                        }
+                        var off = formatter.format(c_start.time)
+                        off = if (isNextDay(c_start)) "$off LT (+1)" else "$off LT"
+                        Text(text = off)
+                    } else {
+                        Text(text = "")}
 
-                    val c_start = Calendar.getInstance()
-                    c_start.time = startTime
-                    if (startoffset != null) {
-                        c_start.add(Calendar.MINUTE, -startoffset)
-                    }
 
-                    val c_end = Calendar.getInstance()
-                    c_end.time = endTime
-                    if (endoffset != null) {
-                        c_end.add(Calendar.MINUTE, -endoffset)
-                    }
-
-                    var off = formatter.format(c_start.time)
-                    off = if (isNextDay(c_start)) "$off LT (+1)" else "$off LT"
-                    Text(text = off)
                     Spacer(modifier = Modifier.weight(1f))
+                    
+                    if (endTime != null){
+                        val c_end = Calendar.getInstance()
+                        c_end.time = endTime
+                        if (endoffset != null) {
+                            c_end.add(Calendar.MINUTE, -endoffset)
+                        }
+                        var on = formatter.format(c_end.time)
+                        on = if (isNextDay(c_end)) "$on LT (+1)" else "$on LT"
+                        Text(text = on)
+                    } else {
+                        Text(text = "")}
 
-                    var on = formatter.format(c_end.time)
-                    on = if (isNextDay(c_end)) "$on LT (+1)" else "$on LT"
-                    Text(text = on)
+
+
+
+
 
 
                 }
@@ -193,7 +241,7 @@ fun ShowDutyTimes(startTime: Date, endTime: Date, startoffset: Int?, endoffset: 
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun showExampleFlight() {
     val dep_time = DateConverter.convertToTimestamp("2024-04-19T23:00:00Z")
@@ -218,7 +266,7 @@ fun showExampleFlight() {
     DutyEventItem(dutyevent = exampleFlight)
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
 @Composable
 fun showRES() {
     val dep_time = DateConverter.convertToTimestamp("2024-04-19T12:00:01Z")
