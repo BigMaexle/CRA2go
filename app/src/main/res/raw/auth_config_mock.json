@@ -1,0 +1,12 @@
+{
+  "client_id": "st53sq4qnbrvbbbtedgqk3dc",
+  "redirect_uri": "org.bmstudio.cra2go://callback",
+  "end_session_redirect_uri": "https://oauth-test.lufthansa.com/lhcrew/logout",
+  "authorization_scope": "https://mock.cms.fra.dlh.de/publicCrewApiDev",
+  "discovery_uri": "",
+  "authorization_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/oauth/authorize",
+  "token_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/oauth/token",
+  "registration_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/logout",
+  "user_info_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/oauth/user",
+  "https_required": true
+}
