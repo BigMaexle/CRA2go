@@ -13,8 +13,8 @@ android {
         applicationId = "org.bmstudio.cra2go"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.11"
+        versionCode = 5
+        versionName = "0.121"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

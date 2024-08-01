@@ -8,5 +8,7 @@
   "token_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/oauth/token",
   "registration_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/logout",
   "user_info_endpoint_uri": "https://oauth-test.lufthansa.com/lhcrew/oauth/user",
-  "https_required": true
+  "https_required": true,
+  "end_session_endpoint": "https://oauth-test.lufthansa.com/lhcrew/oauth/authorize",
+  "client_secret": "rpgtUArDew"
 }

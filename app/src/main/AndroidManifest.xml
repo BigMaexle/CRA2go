@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.presentation.LoginActivity"></activity>
-        <activity android:name=".login.presentation.AuthRecievedActivitiy"></activity>
+        <activity android:name=".login.presentation.TokenActivity"></activity>
 
 
     </application>

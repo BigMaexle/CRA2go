@@ -13,7 +13,6 @@ import androidx.annotation.WorkerThread
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.material3.Text
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationRequest
@@ -22,6 +21,7 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.browser.BrowserMatcher
+import org.bmstudio.cra2go.login.presentation.TokenActivity
 import org.bmstudio.cra2go.login.domain.model.AuthStateManager
 import org.bmstudio.cra2go.login.domain.model.Configuration
 import org.bmstudio.cra2go.login.domain.model.OAuthLogin
@@ -66,23 +66,21 @@ class LoginActivity() : ComponentActivity() {
         mAuthService = createAuthorizationService()
 
         if (mAuthStateManager.current.isAuthorized
-            && !mConfiguration.hasConfigurationChanged()
         ) {
             Log.i(TAG, "User is already authenticated, proceeding to token activity")
-            //startActivity(Intent(this, TokenActivity::class.java))
+            startActivity(Intent(this, TokenActivity::class.java))
             finish()
             return
         }
 
         if (!mConfiguration.isValid) {
             Log.e(TAG,mConfiguration.configurationError.toString())
-            //return
+            return
         }
 
 
         mExecutor.execute( {
             this.initializeAppAuth()
-            this.createAuthorizationService()
             this.createAuthRequest("")
             this.startAuth()
         } )
@@ -106,7 +104,7 @@ class LoginActivity() : ComponentActivity() {
         super.onDestroy()
 
         if (mAuthService != null) {
-            mAuthService.dispose()
+            //mAuthService.dispose()
         }
     }
 
@@ -232,7 +230,7 @@ class LoginActivity() : ComponentActivity() {
 
         val completionIntent = Intent(
             this,
-            AuthRecievedActivitiy::class.java)
+            TokenActivity::class.java)
         val cancelIntent = Intent(
             this,
             LoginActivity::class.java)
