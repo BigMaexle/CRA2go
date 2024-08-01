@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -101,7 +102,12 @@ public final class Configuration {
      */
     public boolean hasConfigurationChanged() {
         String lastHash = getLastKnownConfigHash();
+
+        Log.i(TAG,"Last Hash: " + lastHash);
+        Log.i(TAG,"Current Hash: " + mConfigHash.toString());
+
         return !mConfigHash.equals(lastHash);
+
     }
 
     /**

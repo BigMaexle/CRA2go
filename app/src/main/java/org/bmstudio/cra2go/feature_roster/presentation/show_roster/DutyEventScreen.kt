@@ -3,7 +3,10 @@ package org.bmstudio.cra2go.feature_roster.presentation.show_roster
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +59,7 @@ import androidx.core.app.ActivityCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import org.bmstudio.cra2go.BuildConfig
+import org.bmstudio.cra2go.feature_roster.domain.model.LoginActivityContract
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.verticalCalender
 import org.bmstudio.cra2go.login.presentation.LoginActivity
 import org.bmstudio.cra2go.ui.theme.CRA2goTheme
@@ -82,6 +86,15 @@ fun DutyEventScreen(
 
     val title = if (BuildConfig.DEBUG) {"CRA2go - MOCK"} else {"CRA2go"}
 
+    val LoginContract = rememberLauncherForActivityResult(
+        contract = LoginActivityContract()
+    ) { result ->
+        if (result != null) {
+            viewModel.onEvent(DutyEventsEvent.UpdateRoster(result,context))
+        }
+        else Toast.makeText(context, "no Result", Toast.LENGTH_SHORT).show()
+
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -98,11 +111,7 @@ fun DutyEventScreen(
                     label = { Text(text = "Download Roster") },
                     selected = false,
                     onClick = {
-                        val loginintent = Intent(
-                            "AUTH",
-                            Uri.parse("Test"), context, LoginActivity::class.java
-                        )
-                        startActivity(context, loginintent, null)
+                        LoginContract.launch(1)
                         scope.launch { drawerState.apply { close() } }
                     })
 
@@ -228,11 +237,13 @@ fun ConfirmDelete(
 }
 
 
+
+
 @Preview
 @Composable
 fun DutyEventScreen_preview(){
     CRA2goTheme {
-        DutyEventScreen()
+        //DutyEventScreen(LoginContract = ActivityResultLauncher {  })
     }
 }
 

@@ -23,6 +23,10 @@ class UpdateDutyEventsFromCRAUseCase(
 
     suspend operator fun invoke(token: String, currentdate: Date) {
 
+        Log.i(TAG,"Updating Duty Events")
+
+
+
         val sdf = SimpleDateFormat("yyyy-MM-dd'Z'")
         val c: Calendar = Calendar.getInstance()
         c.setTime(currentdate)
@@ -52,6 +56,7 @@ class UpdateDutyEventsFromCRAUseCase(
             insertCRADutyEvents(response.body()!!)
         } else {
             Log.e(TAG, "Response not successful")
+            Log.e(TAG, response.toString())
         }
 
     }
@@ -64,11 +69,6 @@ class UpdateDutyEventsFromCRAUseCase(
             }
         }
         Log.i(TAG, "Inserting Duty Events")
-
-
-
-
-        Log.i(TAG, "collected")
 
         val list_of_new_events = ArrayList<DutyEvent>()
         schedule.rosterDays.onEach { rosterday ->

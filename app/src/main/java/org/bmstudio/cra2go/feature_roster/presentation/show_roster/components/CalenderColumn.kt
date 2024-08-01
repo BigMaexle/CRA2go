@@ -67,7 +67,11 @@ fun verticalCalender(
 
 
     LaunchedEffect(Unit) {
-        listState.scrollToItem(currentDayIndex)
+
+        if (currentDayIndex in 0 until allDates.size) {
+            listState.scrollToItem(currentDayIndex)
+        }
+
     }
 
 

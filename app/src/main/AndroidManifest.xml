@@ -32,9 +32,11 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".login.presentation.LoginActivity"></activity>
-        <activity android:name=".login.presentation.TokenActivity"></activity>
-
+        <activity
+            android:name=".login.presentation.LoginActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+        </activity>
 
     </application>
 
