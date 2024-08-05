@@ -16,7 +16,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthState
@@ -33,6 +43,7 @@ import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.browser.BrowserMatcher
+import org.bmstudio.cra2go.BuildConfig
 import org.bmstudio.cra2go.login.domain.model.AuthStateManager
 import org.bmstudio.cra2go.login.domain.model.Configuration
 import org.bmstudio.cra2go.ui.theme.CRA2goTheme
@@ -63,24 +74,27 @@ class LoginActivity() : ComponentActivity() {
 
     private var mAuthIntentLatch: CountDownLatch = CountDownLatch(1)
 
-    lateinit var mExecutor: Executor
+    val mExecutor: Executor = Executors.newSingleThreadExecutor()
 
     private var mBrowserMatcher: BrowserMatcher = AnyBrowserMatcher.INSTANCE
-
-    private lateinit var receiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mExecutor = Executors.newSingleThreadExecutor()
         mAuthStateManager = AuthStateManager.getInstance(this)
         mConfiguration = Configuration.getInstance(this)
+
         mAuthService = createAuthorizationService()
 
 
-        if (mAuthStateManager.current.isAuthorized()
-        ) {
-            Log.i(TAG, "User is already authenticated, return AccessCode")
+        if (mAuthStateManager.current.isAuthorized
+            && !mAuthStateManager.current.needsTokenRefresh
+            && !intent.getBooleanExtra("ForceLogin",false)
+        ){
+
+            Log.i(TAG,"User is already logged in")
+
+            Toast.makeText(this, "User already logged in - downloading roster", Toast.LENGTH_SHORT).show()
 
             setResult(RESULT_OK,Intent().putExtra("AccessCode",mAuthStateManager.current.accessToken.toString()))
 
@@ -89,40 +103,34 @@ class LoginActivity() : ComponentActivity() {
         }
 
         if (!mConfiguration.isValid) {
+            Log.e(TAG,"Configuration is invalid")
             Log.e(TAG,mConfiguration.configurationError.toString())
+            Toast.makeText(this, "Configuration is invalid - restart the app", Toast.LENGTH_SHORT).show()
             return
         } else {
             Log.i(TAG,"Configuration is valid")
             mConfiguration.acceptConfiguration()
         }
 
-
-        mExecutor.execute {
+        mExecutor.execute{
             this.initializeAppAuth()
             this.createAuthRequest("")
-            this.startAuth()
-        }
-
-
-
-
-
+            this.startAuth()}
 
         setContent {
             CRA2goTheme {
-                Text(text = "LOGINACTIVITY")
+                LoadingScreen()
             }
         }
 
 
-        //getContent.launch("10")
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         if (mAuthService != null) {
-            //mAuthService.dispose()
+            mAuthService.dispose()
         }
     }
 
@@ -134,22 +142,32 @@ class LoginActivity() : ComponentActivity() {
     override fun onStart() {
         super.onStart()
 
-        //finish()
 
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleNewIntent(intent)
+
+        handleBrowserRedirect(intent)
     }
 
-    private fun handleNewIntent(intent: Intent) {
+    private fun handleBrowserRedirect(intent: Intent) {
 
         val response = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
         if (response != null || ex != null) {
             mAuthStateManager.updateAfterAuthorization(response, ex)
-            exchangeAuthorizationCode(response!!)
+            Log.i(TAG,"Response: " + response.toString())
+
+            if (response != null){
+            performTokenRequest(
+                response.createTokenExchangeRequest()
+            ) { tokenResponse: TokenResponse?, authException: AuthorizationException? ->
+                handleCodeExchangeResponse(
+                    tokenResponse,
+                    authException
+                )
+            }}
         }
         if (response?.authorizationCode != null) {
             // authorization code exchange is required
@@ -157,8 +175,11 @@ class LoginActivity() : ComponentActivity() {
             //exchangeAuthorizationCode(response)
         } else if (ex != null) {
             Log.w(TAG,"Authorization flow failed: " + ex.message)
+            Toast.makeText(this, "Authorization flow failed: " + ex.message, Toast.LENGTH_SHORT).show()
+            finish()
         } else {
             Log.w(TAG,"No authorization state retained - reauthorization required")
+            finish()
         }
 
 
@@ -176,12 +197,6 @@ class LoginActivity() : ComponentActivity() {
         }
     }
 
-    private fun handleAccessTokenResponse(
-        tokenResponse: TokenResponse?,
-        authException: AuthorizationException?
-    ) {
-        mAuthStateManager.updateAfterTokenResponse(tokenResponse, authException)
-    }
 
     private fun handleCodeExchangeResponse(
         tokenResponse: TokenResponse?,
@@ -209,11 +224,17 @@ class LoginActivity() : ComponentActivity() {
         callback: TokenResponseCallback
     ) {
         val clientAuthentication: ClientAuthentication
+        if (BuildConfig.DEBUG){
         clientAuthentication = ClientSecretBasic(
             "rpgtUArDew"
-        )
+        )} else {
+            clientAuthentication = ClientSecretBasic(
+                "CfsJTAKcpv"
+            )
+        }
 
         Log.i(TAG,"Performing Token Request")
+        Log.i(TAG,"Token Request: " + clientAuthentication.toString())
 
         mAuthService.performTokenRequest(
             request,
@@ -259,13 +280,6 @@ class LoginActivity() : ComponentActivity() {
         Log.i(TAG, "Initializing AppAuth")
         recreateAuthorizationService()
 
-        if (mAuthStateManager.current.authorizationServiceConfiguration != null) {
-            // configuration is already created, skip to client initialization
-            Log.i(TAG, "auth config already established")
-            warmUpBrowser()
-            initializeClient()
-            return
-        }
 
         // if we are not using discovery, build the authorization service configuration directly
         // from the static configuration values.
@@ -378,6 +392,32 @@ class LoginActivity() : ComponentActivity() {
             mAuthIntent.get())
     }
 
+}
+
+@Composable
+fun LoadingScreen() {
+    Surface {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ){
+                CircularProgressIndicator()
+                Text(text = "Loading...")
+            }
+        }
+    }
+
+}
+
+@Preview (showBackground = true)
+@Composable
+fun showLoadingScreen(){
+    LoadingScreen()
 }
 
 

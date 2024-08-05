@@ -3,6 +3,8 @@ activity = "1.9.0"
 agp = "8.3.1"
 appauth = "0.11.1"
 converterGson = "2.9.0"
+datastore = "1.1.1"
+datastorePreferences = "1.0.0"
 gson = "2.10.1"
 hiltAndroid = "2.49"
 hiltCompiler = "2.48"
@@ -33,6 +35,8 @@ composePreviewRenderer = "0.0.1-alpha01"
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompilerVersion" }
 androidx-hilt-lifecycle-viewmodel = { module = "androidx.hilt:hilt-lifecycle-viewmodel", version.ref = "hiltLifecycleViewmodel" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }

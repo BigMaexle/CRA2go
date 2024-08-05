@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
@@ -26,6 +27,7 @@ import java.util.Locale
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun verticalCalender(
+    listState: LazyListState,
     events: List<DutyEvent>,
     padding: PaddingValues
 ) {
@@ -41,8 +43,6 @@ fun verticalCalender(
             }
         }
 
-    //
-    val listState = rememberLazyListState()
 
     // Sort events by date
     val sortedEvents = filteredEvents.sortedBy { it.day }
@@ -159,7 +159,9 @@ fun showCalender() {
 
     val events = listOf(exampleFlight)
 
-    verticalCalender(events = events, padding = PaddingValues(0.dp))
+    verticalCalender(
+        listState = rememberLazyListState(),
+        events = events, padding = PaddingValues(0.dp))
 
 
 }

@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import net.openid.appauth.connectivity.ConnectionBuilder;
 import net.openid.appauth.connectivity.DefaultConnectionBuilder;
 
+import org.bmstudio.cra2go.BuildConfig;
 import org.bmstudio.cra2go.R;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,6 +82,8 @@ public final class Configuration {
             config = new Configuration(context);
             sInstance = new WeakReference<Configuration>(config);
         }
+
+
 
         return config;
     }
@@ -197,8 +200,14 @@ public final class Configuration {
     }
 
     private void readConfiguration() throws InvalidConfigurationException {
-        BufferedSource configSource =
-                Okio.buffer(Okio.source(mResources.openRawResource(R.raw.auth_config_mock)));
+        BufferedSource configSource;
+        if (BuildConfig.DEBUG) {
+            configSource =
+                    Okio.buffer(Okio.source(mResources.openRawResource(R.raw.auth_config_mock)));
+        } else {
+            configSource =
+                    Okio.buffer(Okio.source(mResources.openRawResource(R.raw.auth_config_prod)));
+        }
         Buffer configData = new Buffer();
         try {
             configSource.readAll(configData);

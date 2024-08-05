@@ -58,7 +58,7 @@ fun DutyEventItem(dutyevent: DutyEvent) {
                             "${formatter.format(lt)} LT",
                     textAlign = TextAlign.Center)
 
-                Divider()
+                //Divider()
             }
             if (dutyevent.eventType == "FLIGHT") {
                 ShowFlightAirportRow(
@@ -150,13 +150,13 @@ fun ShowDutyTimes(startTime: Date?, endTime: Date?, startoffset: Int?, endoffset
     val day = Calendar.getInstance()
     day.time = dayofevent
 
-    fun isNextDay(time: Calendar) : Boolean {
+    fun DayDifference(time: Calendar) : String{
 
-        return if (time.get(Calendar.DAY_OF_YEAR) != day.get(Calendar.DAY_OF_YEAR)){
-            true
-        } else {
-            false
-        }
+        val diff: Int = (time.get(Calendar.DAY_OF_YEAR) - day.get(Calendar.DAY_OF_YEAR))
+
+        if (diff > 0) return " +$diff"
+        if (diff < 0) return " $diff"
+        return ""
 
     }
 
@@ -188,9 +188,7 @@ fun ShowDutyTimes(startTime: Date?, endTime: Date?, startoffset: Int?, endoffset
                 if (endTime != null){
                     val c_end = Calendar.getInstance()
                     c_end.time = endTime
-                    var on = formatter.format(c_end.time)
-                    on = if (isNextDay(c_end)) "$on UTC (+1)" else "$on UTC"
-                    Text(text = on)
+                    Text(text = formatter.format(c_end.time) + " UTC" + DayDifference(c_end))
                 }  else{ Text(text = "")}
 
 
@@ -206,9 +204,7 @@ fun ShowDutyTimes(startTime: Date?, endTime: Date?, startoffset: Int?, endoffset
                         if (startoffset != null) {
                             c_start.add(Calendar.MINUTE, -startoffset)
                         }
-                        var off = formatter.format(c_start.time)
-                        off = if (isNextDay(c_start)) "$off LT (+1)" else "$off LT"
-                        Text(text = off)
+                        Text(text = formatter.format(c_start.time) + " LT" + DayDifference(c_start))
                     } else {
                         Text(text = "")}
 
@@ -222,8 +218,7 @@ fun ShowDutyTimes(startTime: Date?, endTime: Date?, startoffset: Int?, endoffset
                             c_end.add(Calendar.MINUTE, -endoffset)
                         }
                         var on = formatter.format(c_end.time)
-                        on = if (isNextDay(c_end)) "$on LT (+1)" else "$on LT"
-                        Text(text = on)
+                        Text(text = formatter.format(c_end.time) + " LT" + DayDifference(c_end))
                     } else {
                         Text(text = "")}
 

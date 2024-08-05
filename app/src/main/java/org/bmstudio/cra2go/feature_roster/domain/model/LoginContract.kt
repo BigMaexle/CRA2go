@@ -11,7 +11,9 @@ class LoginActivityContract : ActivityResultContract<Int, String?>() {
 
     override fun createIntent(context: Context, input: Int): Intent {
         return Intent(context, LoginActivity::class.java).apply {
-            putExtra("Test", 100)
+            if (input == 1) {
+                putExtra("ForceLogin", true)
+            }
         }
     }
 

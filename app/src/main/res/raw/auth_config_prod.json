@@ -1,12 +1,15 @@
 {
-  "client_id": "",
-  "redirect_uri": "net.openid.appauthdemo:/oauth2redirect",
-  "end_session_redirect_uri": "net.openid.appauthdemo:/oauth2redirect",
-  "authorization_scope": "openid email profile",
+  "client_id": "am39f2kvrg8u6gvatfbfkyre",
+  "redirect_uri": "org.bmstudio.cra2go://callback",
+  "end_session_redirect_uri": "https://oauth.lufthansa.com/lhcrew/logout",
+  "authorization_scope": "https://cms.fra.dlh.de/publicCrewApi",
   "discovery_uri": "",
-  "authorization_endpoint_uri": "",
-  "token_endpoint_uri": "",
-  "registration_endpoint_uri": "",
-  "user_info_endpoint_uri": "",
-  "https_required": true
+  "authorization_endpoint_uri": "https://oauth.lufthansa.com/lhcrew/oauth/authorize",
+  "token_endpoint_uri": "https://oauth.lufthansa.com/lhcrew/oauth/token",
+  "registration_endpoint_uri": "https://oauth.lufthansa.com/lhcrew/logout",
+  "user_info_endpoint_uri": "https://oauth.lufthansa.com/lhcrew/oauth/user",
+  "https_required": true,
+  "end_session_endpoint": "https://oauth.lufthansa.com/lhcrew/oauth/authorize",
+  "client_secret": "CfsJTAKcpv",
+  "token_endpoint_auth_method": "client_secret_basic"
 }
