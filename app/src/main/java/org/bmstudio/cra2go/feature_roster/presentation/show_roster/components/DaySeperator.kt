@@ -89,7 +89,7 @@ fun day_background_color(today: Calendar, day: Date): Color {
     val c = Calendar.getInstance()
     c.time = day
 
-    var color: Color = Color.White
+    var color: Color = MaterialTheme.colorScheme.background
 
     if (areSameDay(today,day)){
         color = MaterialTheme.colorScheme.secondaryContainer

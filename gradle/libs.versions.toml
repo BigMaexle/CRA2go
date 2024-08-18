@@ -31,6 +31,8 @@ roomCompiler = "2.6.1"
 roomRuntime = "2.6.1"
 volley = "1.2.1"
 composePreviewRenderer = "0.0.1-alpha01"
+material3Android = "1.2.1"
+constraintlayout = "2.1.4"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -72,6 +74,7 @@ play-services-cronet = { module = "com.google.android.gms:play-services-cronet",
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 compose-preview-renderer = { group = "com.android.tools.compose", name = "compose-preview-renderer", version.ref = "composePreviewRenderer" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

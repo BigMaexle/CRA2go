@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -76,35 +77,37 @@ fun verticalCalender(
 
 
     Surface(androidx.compose.ui.Modifier.padding(padding)) {
-        Column(
-            modifier = Modifier.padding(0.dp)
-        ) {
-            Text(
-                text = "Your Next Flights",
-                modifier = Modifier.padding(10.dp)
-            )
-            Divider()
-            LazyColumn (
-                state = listState
-            ){
-                items(allDates.size) { index ->
-                    val currentDate = allDates[index]
+            Column(
+                modifier = Modifier.padding(0.dp)
+            ) {
+                Text(
+                    text = "Your Next Flights",
+                    modifier = Modifier.padding(10.dp)
+                )
+                Divider()
+                LazyColumn (
+                    state = listState
+                ){
+                    items(allDates.size) { index ->
+                        val currentDate = allDates[index]
 
-                    // Display separator for each day
-                    Dayseparator(day = currentDate)
+                        // Display separator for each day
+                        Dayseparator(day = currentDate)
 
-                    // Display events for the day
-                    sortedEvents.filter { event ->
-                        val eventDate = Calendar.getInstance()
-                        eventDate.time = event.day
-                        areDatesOnSameDay(event.day,currentDate)
-                    }.forEach { event ->
-                        DutyEventItem(dutyevent = event)
+                        // Display events for the day
+                        sortedEvents.filter { event ->
+                            val eventDate = Calendar.getInstance()
+                            eventDate.time = event.day
+                            areDatesOnSameDay(event.day,currentDate)
+                        }.forEach { event ->
+                            DutyEventItem(dutyevent = event)
+                        }
                     }
                 }
             }
         }
-    }
+
+
 }
 
 fun getEndOfMonth(date: Date): Date {
