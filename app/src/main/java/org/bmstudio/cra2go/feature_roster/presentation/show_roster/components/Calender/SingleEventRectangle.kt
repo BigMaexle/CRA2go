@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +21,33 @@ import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 @Composable
 fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
 
+    if (event.eventCategory == "OFFDUTY") {
+        return
+    }
+
+    if (event.eventType == "FLIGHT" && event.eventDetails != "X") {
+        val (startPosition, eventWidth) = calculateEventPositionAndWidth(
+            startevent = event,
+            endevent = event,
+            cellWidth = cellWidth
+        )
+        val color: Color = determineEventColor(event)
+        Box(
+            modifier = Modifier
+                .offset(x = startPosition)
+                .requiredWidth(eventWidth)
+                .height(15.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .background(color))
+        {
+            Text(
+                text = "",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer)
+        }
+
+    }
+
     if (event.eventType == "GROUNDEVENT") {
         val (startPosition, eventWidth) = calculateEventPositionAndWidth(
             startevent = event,
@@ -33,8 +61,8 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
             modifier = Modifier
                 .offset(x = startPosition)
                 .width(eventWidth)
-                .height(20.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .height(15.dp)
+                .clip(RoundedCornerShape(5.dp))
                 .background(color),
             contentAlignment = Alignment.Center
 
@@ -43,7 +71,7 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
             Text(
                 text = event.eventCategory.toString(),
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White)
+                color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 
@@ -53,8 +81,11 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
 @Composable
 fun determineEventColor(event: DutyEvent): Color {
 
+    val LH_YELLOW = Color(0.95f,0.75f,0f)
+    val LH_BLUE = Color(0f,0.2f,0.5f)
+
     if (event.eventType == "GROUNDEVENT") return MaterialTheme.colorScheme.primary
-    if (event.eventType == "FLIGHT") return MaterialTheme.colorScheme.secondary
+    if (event.eventType == "FLIGHT") return LH_YELLOW
 
     return MaterialTheme.colorScheme.onSurface
 

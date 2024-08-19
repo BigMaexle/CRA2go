@@ -141,22 +141,13 @@ fun DayCell(
         ) {
             // Display the day number
             Text(
-                text = (day+1).toString(),
+                text = " "+(day+1).toString(),
                 style = MaterialTheme.typography.bodySmall
             )
 
-            for (event in events) {
-                RotationRectangle(starting = true,rotations = event, cellWidth = cellWidth)
+            for (event in eventsForDay) {
+                RotationRectangle(starting = true,event = event, cellWidth = cellWidth)
             }
-
-
-            if (dayOfWeek == Calendar.MONDAY && activeRotation.isNotEmpty() && activeRotation.first().size > 1) {
-
-                RotationRectangle(starting = false,rotations = activeRotation.first(), cellWidth = cellWidth)
-
-
-            }
-
 
 
         }

@@ -51,6 +51,10 @@ fun MultiEventRectangle(starting:Boolean, events: List<DutyEvent>, cellWidth: Dp
             val eventWidth = if (blocked_by_sunday) cutoffeventWidth else raweventWidth
             val exceedingWidth = max(0.dp, eventWidth - cellWidth)
 
+            Log.i(TAG, "MultiEventRectangle: ${earliestEvent.startLocation} - ${earliestEvent.endLocation}")
+            Log.i(TAG, "MultiEventRectangle: $blocked_by_sunday")
+            Log.i(TAG, "MultiEventRectangle: $eventWidth")
+
             Box(
                 modifier = Modifier
                     .requiredWidth(eventWidth)
@@ -136,6 +140,7 @@ fun cutOffWidthBySunday(earliestEvent: DutyEvent, latestEvent: DutyEvent, cellWi
     val cal_latestEvent = Calendar.getInstance().apply { time = latestEvent.endTime }
 
     cal_earliestEvent.add(Calendar.DAY_OF_YEAR, -1)
+    cal_latestEvent.add(Calendar.DAY_OF_YEAR, -1)
 
     if (cal_earliestEvent.get(Calendar.WEEK_OF_YEAR) == cal_latestEvent.get(Calendar.WEEK_OF_YEAR)) {
         return Pair(false, 0.dp)
@@ -143,7 +148,8 @@ fun cutOffWidthBySunday(earliestEvent: DutyEvent, latestEvent: DutyEvent, cellWi
 
         //calculate time to sunday evening
         val sunday_evening = Calendar.getInstance().apply {time = earliestEvent.startTime}
-        sunday_evening.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+        sunday_evening.set(Calendar.DAY_OF_WEEK, 7)
+        sunday_evening.add(Calendar.DATE,1)
         sunday_evening.set(Calendar.HOUR_OF_DAY, 23)
         sunday_evening.set(Calendar.MINUTE, 59)
         sunday_evening.set(Calendar.SECOND, 59)
@@ -166,7 +172,7 @@ fun FillRotationBox(skipped_width: Dp, starttime: Date, endtime: Date, events: L
 
     val TAG = "FillRotationBox"
 
-    val flight_events = events.filter { it.eventType == "FLIGHT" && it.eventDetails != "X" }.sortedBy { it.startTime }
+    val flight_events = events.filter { it.eventCategory == "flight" && it.eventDetails != "X" }.sortedBy { it.startTime }
 
 
     Row(
@@ -174,7 +180,7 @@ fun FillRotationBox(skipped_width: Dp, starttime: Date, endtime: Date, events: L
         modifier = Modifier.absoluteOffset(x = - skipped_width)
     ) {
         flight_events.forEach { flight_event ->
-            val (startPosition, eventWidth) = calculateEventPositionAndWidth(
+            val (_ ,eventWidth) = calculateEventPositionAndWidth(
                 startevent = flight_event,
                 endevent = flight_event,
                 cellWidth = cellWidth
@@ -182,7 +188,8 @@ fun FillRotationBox(skipped_width: Dp, starttime: Date, endtime: Date, events: L
 
             Box(
                 modifier = Modifier
-                    .requiredWidth(eventWidth*1.225f)
+                    .absoluteOffset(x = skipped_width)
+                    .requiredWidth(eventWidth)
                     .height(20.dp)
                     .background(MaterialTheme.colorScheme.primary)
             )
@@ -196,9 +203,10 @@ fun FillRotationBox(skipped_width: Dp, starttime: Date, endtime: Date, events: L
 
                 Box(
                     modifier = Modifier
-                        .width(spacer_to_next_flight * 1.225f)
+                        .absoluteOffset(x = skipped_width)
+                        .requiredWidth(spacer_to_next_flight )
                         .height(20.dp)
-                        .background(Color.White),
+                        .background(Color.LightGray),
                     contentAlignment = Alignment.Center
                 ) {
 

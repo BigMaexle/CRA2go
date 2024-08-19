@@ -15,21 +15,13 @@ import androidx.compose.ui.unit.dp
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 
 @Composable
-fun RotationRectangle(starting: Boolean,rotations: List<DutyEvent>, cellWidth: Dp) {
+fun RotationRectangle(starting: Boolean,event: DutyEvent, cellWidth: Dp) {
 
     val displayevents = emptyList<DutyEvent>().toMutableList()
 
-    if (rotations.isEmpty()) return
-    if (rotations.size == 1) {
-        SingleEventRectangle(event = rotations.first(), cellWidth = cellWidth)
-    }
-    if (rotations.size > 1) {
+    if (event == null) return
 
-        MultiEventRectangle(starting = starting,events = rotations, cellWidth = cellWidth)
-
-    }
-
-
+    SingleEventRectangle(event = event, cellWidth = cellWidth)
 
 
 
