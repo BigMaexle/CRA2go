@@ -58,7 +58,7 @@ fun ConfirmDelete(
 @Composable
 fun ConfirmDeletePreview(){
     ConfirmDelete(
-        onConfirm = { /*TODO*/ }
-        , onDismiss = { /*TODO*/ }
+        onConfirm = {  }
+        , onDismiss = { }
         , showDialog = true)
 }

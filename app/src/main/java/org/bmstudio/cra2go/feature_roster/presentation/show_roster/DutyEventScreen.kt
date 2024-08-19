@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import org.bmstudio.cra2go.BuildConfig
-import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.CalendarView
+import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.Calender.CalendarView
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.DutyScreenDropDown
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.ViewState
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.ForceLogin
@@ -159,7 +159,7 @@ fun BottomDutyPlanBar(
                 onItemClick(ViewState.ListViewState)
                 scope.launch {
                     val today = Calendar.getInstance()
-                    DutyListState.animateScrollToItem(today.get(Calendar.DAY_OF_MONTH)-1)}
+                    DutyListState.animateScrollToItem(today.get(Calendar.DAY_OF_YEAR)-1)}
             },
             icon = { Icon(imageVector = Icons.AutoMirrored.Filled.List, contentDescription = "List")}
         )
