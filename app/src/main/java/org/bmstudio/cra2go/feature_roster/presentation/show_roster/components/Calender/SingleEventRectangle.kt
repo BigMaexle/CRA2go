@@ -36,7 +36,7 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
             modifier = Modifier
                 .offset(x = startPosition)
                 .requiredWidth(eventWidth)
-                .height(15.dp)
+                .height(0.dp)
                 .clip(RoundedCornerShape(5.dp))
                 .background(color))
         {
@@ -61,7 +61,7 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
             modifier = Modifier
                 .offset(x = startPosition)
                 .width(eventWidth)
-                .height(15.dp)
+                .height(10.dp)
                 .clip(RoundedCornerShape(5.dp))
                 .background(color),
             contentAlignment = Alignment.Center
@@ -69,7 +69,7 @@ fun SingleEventRectangle(event: DutyEvent, cellWidth: Dp) {
         )
         {
             Text(
-                text = event.eventCategory.toString(),
+                text = "",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimary)
         }

@@ -23,6 +23,9 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
     val paddingDaysBefore = (-startingDayOfWeek+1 .. 0).toList()
     val paddingDaysAfter = List((7 - (startingDayOfWeek + daysInMonth) % 7) % 7) { -1 }
     val allDays = paddingDaysBefore + days + paddingDaysAfter
+
+
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(7)
     ) {
@@ -58,7 +61,8 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
                     val eventcal = Calendar.getInstance().apply { time = event.day }
                     eventcal.get(Calendar.YEAR) == dayofmonth.get(Calendar.YEAR) &&
                             eventcal.get(Calendar.MONTH) == dayofmonth.get(Calendar.MONTH) &&
-                            eventcal.get(Calendar.DAY_OF_MONTH) == dayofmonth.get(Calendar.DAY_OF_MONTH)
+                            eventcal.get(Calendar.DAY_OF_MONTH) == dayofmonth.get(Calendar.DAY_OF_MONTH) &&
+                            event.eventAttributes?.rotationId != null
 
 
                 }
@@ -69,7 +73,7 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
                 isCurrentMonth = isCurrentMonth,
                 currentMonth = currentMonth,
                 day = day,
-                events = rotationsStartAtDay,
+                startingRotations = rotationsStartAtDay,
                 eventsForDay = eventsForDay,
                 selected = selectedDateEvents,
                 activeRotation = activeRotations

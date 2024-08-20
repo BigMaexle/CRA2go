@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -59,7 +60,7 @@ fun MultiEventRectangle(starting:Boolean, events: List<DutyEvent>, cellWidth: Dp
                 modifier = Modifier
                     .requiredWidth(eventWidth)
                     .absoluteOffset(x = startPosition + (exceedingWidth * 0.5f))
-                    .height(20.dp)
+                    .height(10.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .border(BorderStroke(0.2.dp, Color.Black), RoundedCornerShape(2.dp)),
                 contentAlignment = Alignment.CenterStart
@@ -84,8 +85,8 @@ fun MultiEventRectangle(starting:Boolean, events: List<DutyEvent>, cellWidth: Dp
             Box(
                 modifier = Modifier
                     .requiredWidth(eventWidth)
-                    .absoluteOffset(x =(exceedingWidth * 0.5f))
-                    .height(20.dp)
+                    .absoluteOffset(x = (exceedingWidth * 0.5f))
+                    .height(10.dp)
                     .clip(RoundedCornerShape(2.dp))
                     .border(BorderStroke(0.2.dp, Color.Black), RoundedCornerShape(2.dp)),
                 contentAlignment = Alignment.CenterStart
@@ -146,18 +147,25 @@ fun cutOffWidthBySunday(earliestEvent: DutyEvent, latestEvent: DutyEvent, cellWi
         return Pair(false, 0.dp)
     } else {
 
-        //calculate time to sunday evening
+        //calculate time to nearest sunday evening
         val sunday_evening = Calendar.getInstance().apply {time = earliestEvent.startTime}
-        sunday_evening.set(Calendar.DAY_OF_WEEK, 7)
-        sunday_evening.add(Calendar.DATE,1)
+        sunday_evening.set(Calendar.DAY_OF_WEEK, 1)
         sunday_evening.set(Calendar.HOUR_OF_DAY, 23)
         sunday_evening.set(Calendar.MINUTE, 59)
         sunday_evening.set(Calendar.SECOND, 59)
+
+        //make sure it is the NEXT sunday evening
+        if (sunday_evening.time.time < earliestEvent.startTime.time) {
+            sunday_evening.add(Calendar.WEEK_OF_YEAR, 1)
+        }
+
         val time_to_sunday_evening = sunday_evening.time.time - earliestEvent.startTime.time
+        val dp_to_sunday_evening = convert_ms_to_dp(time_to_sunday_evening, cellWidth)
 
         Log.i("SundayEVENINGCALC", "time_to_sunday_evening: $time_to_sunday_evening")
+        Log.i("SundayEVENINGCALC", "dp_to_sunday_evening: $dp_to_sunday_evening")
 
-        return Pair(true, cellWidth * ( time_to_sunday_evening / 1000f / 60 / 60 / 24 ).toFloat())
+        return Pair(true,dp_to_sunday_evening)
 
 
 
@@ -172,59 +180,33 @@ fun FillRotationBox(skipped_width: Dp, starttime: Date, endtime: Date, events: L
 
     val TAG = "FillRotationBox"
 
-    val flight_events = events.filter { it.eventCategory == "flight" && it.eventDetails != "X" }.sortedBy { it.startTime }
+    val flight_events = events.filter {
+        (it.eventCategory == "flight" && it.eventDetails != "X") }.sortedBy { it.startTime }
 
+    flight_events.forEach { event ->
 
-    Row(
-        horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.absoluteOffset(x = - skipped_width)
-    ) {
-        flight_events.forEach { flight_event ->
-            val (_ ,eventWidth) = calculateEventPositionAndWidth(
-                startevent = flight_event,
-                endevent = flight_event,
-                cellWidth = cellWidth
-            )
+        //calculate offset of beginning of rotationbox in .dp
+        val offset_inside_rot_box: Dp = convert_ms_to_dp(event.startTime!!.time - starttime.time, cellWidth)
 
-            Box(
-                modifier = Modifier
-                    .absoluteOffset(x = skipped_width)
-                    .requiredWidth(eventWidth)
-                    .height(20.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
+        val eventWidth: Dp = convert_ms_to_dp(event.endTime!!.time - event.startTime!!.time, cellWidth)
 
-            //empty space to next flight event
+        Box(modifier = Modifier
+            .absoluteOffset(x = offset_inside_rot_box - skipped_width )
+            .width(eventWidth)
+            .height(20.dp)
+            .background(MaterialTheme.colorScheme.primary))
 
-            if (flight_events.indexOf(flight_event) < (flight_events.size-1) ) {
-
-                val time_to_next_flight = flight_events[flight_events.indexOf(flight_event) + 1].startTime!!.time - flight_event.endTime!!.time
-                val spacer_to_next_flight =  cellWidth * ( time_to_next_flight / 1000 / 60 / 60 / 24 ).toFloat()
-
-                Box(
-                    modifier = Modifier
-                        .absoluteOffset(x = skipped_width)
-                        .requiredWidth(spacer_to_next_flight )
-                        .height(20.dp)
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    if (spacer_to_next_flight > 30.dp){
-                        Text(textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall,
-                            text = flight_event.endLocation.toString())
-                    }
-
-                }
-            }
-
-        }
     }
 
 
 }
 
+fun convert_ms_to_dp(ms: Long, cellWidth: Dp): Dp {
+    // Convert milliseconds to fraction of one DayCell
+
+    return cellWidth * ( ms / 1000f / 60 / 60 / 24 )
+
+}
 
 
 
@@ -238,4 +220,51 @@ fun earliestEventWithValidTime(events: List<DutyEvent>): DutyEvent? {
 fun latestEventWithValidTime(events: List<DutyEvent>): DutyEvent? {
     return events.filter { it.endTime != null }  // Filter out events with no valid time
         .maxByOrNull { it.endTime!! }   // Find the event with the maximum time
+}
+
+@Preview (showBackground = true)
+@Composable
+fun MultiEventRectanglePreview() {
+
+    val alreadydisplayed = 0.dp
+
+    val startoffset = 20.dp
+
+    Box(modifier = Modifier
+        .requiredWidth(100.dp)
+        .absoluteOffset(x = 0.dp)
+        .height(20.dp)
+        .clip(RoundedCornerShape(2.dp))
+        .border(BorderStroke(0.2.dp, Color.Black), RoundedCornerShape(2.dp))
+        .background(Color.White),
+        contentAlignment = Alignment.CenterStart)
+    {
+        Box(modifier = Modifier
+            .absoluteOffset(x = 0.dp)
+            .width(10.dp)
+            .height(20.dp)
+            .background(MaterialTheme.colorScheme.primary))
+        val spacer_to_next_flight = 80.dp
+        Box(
+            modifier = Modifier
+                .absoluteOffset(x = 10.dp)
+                .width(spacer_to_next_flight)
+                .height(20.dp)
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+
+            if (spacer_to_next_flight > 30.dp){
+                Text(textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodySmall,
+                    text = "JFK")
+            }
+
+        }
+        Box(modifier = Modifier
+            .absoluteOffset(x = 90.dp)
+            .width(10.dp)
+            .height(20.dp)
+            .background(MaterialTheme.colorScheme.primary))
+    }
 }
