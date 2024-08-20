@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.min
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import java.util.Calendar
 import java.util.Date
@@ -49,7 +50,7 @@ fun MultiEventRectangle(starting:Boolean, events: List<DutyEvent>, cellWidth: Dp
         if (starting){
             val (blocked_by_sunday,cutoffeventWidth) = cutOffWidthBySunday(earliestEvent,latestEvent,cellWidth)
 
-            val eventWidth = if (blocked_by_sunday) cutoffeventWidth else raweventWidth
+            val eventWidth = if (blocked_by_sunday) min(cutoffeventWidth,raweventWidth) else raweventWidth
             val exceedingWidth = max(0.dp, eventWidth - cellWidth)
 
             Log.i(TAG, "MultiEventRectangle: ${earliestEvent.startLocation} - ${earliestEvent.endLocation}")
