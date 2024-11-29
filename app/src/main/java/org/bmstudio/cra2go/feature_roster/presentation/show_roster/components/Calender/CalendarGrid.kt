@@ -18,9 +18,9 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
     val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
     val firstDayOfMonth = currentMonth.clone() as Calendar
     firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
-    val startingDayOfWeek = firstDayOfMonth.get(Calendar.DAY_OF_WEEK) -1 // Adjusting for zero-based indexing
+    val startingDayOfWeek = determineDay(firstDayOfMonth)
     val days = (1..daysInMonth).toList()
-    val paddingDaysBefore = (-startingDayOfWeek+1 .. 0).toList()
+    val paddingDaysBefore = (-startingDayOfWeek + 1 .. 0).toList()
     val paddingDaysAfter = List((7 - (startingDayOfWeek + daysInMonth) % 7) % 7) { -1 }
     val allDays = paddingDaysBefore + days + paddingDaysAfter
 
@@ -54,7 +54,7 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
 
 
             // is current in active month
-            val isCurrentMonth = currentMonth.get(Calendar.MONTH) == dayofmonth.get(Calendar.MONTH)
+            val isCurrentMonth = currentMonth.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH)
 
             val activeRotations = groupedEvents.filter { eventList ->
                 eventList.any { event ->
@@ -80,5 +80,13 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar, selectedDateEv
             )
 
         }
+    }
+}
+
+fun determineDay(firstDayOfMonth: Calendar): Int {
+    return if (firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1 == 0) {
+        7
+    } else{
+        firstDayOfMonth.get(Calendar.DAY_OF_WEEK) - 1
     }
 }

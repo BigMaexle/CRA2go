@@ -167,7 +167,8 @@ fun DayCell(
 
             Box(modifier = Modifier.padding(2.dp)){
                 //check if current day
-                if (day == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1) {
+                if (day == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1 &&
+                        isCurrentMonth) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
