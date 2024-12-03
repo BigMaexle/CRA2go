@@ -12,38 +12,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.bmstudio.cra2go.CRA2go
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
+import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
+import org.bmstudio.cra2go.ui.theme.CRA2goTheme
 
 @Composable
-fun RotationRectangle(starting: Boolean,rotation: List<DutyEvent>, cellWidth: Dp) {
+fun RotationRectangle(rotation: List<DutyEvent>, cellWidth: Dp) {
 
     val rotation_without_Briefing = rotation.filter { it.eventType != "BRIEFING" }
 
-    if (rotation.isEmpty()) return
-    if (rotation.size == 1) {
-        SingleEventRectangle(event = rotation[0], cellWidth = cellWidth)
-    }
-    if (rotation.size > 1) {
-        MultiEventRectangle(starting = starting, events = rotation_without_Briefing, cellWidth = cellWidth)
-    }
+    EventRectangle( events = rotation_without_Briefing, cellWidth = cellWidth)
 
 
 
 
 }
 
-@Preview (showBackground = true)
+@Preview (showBackground = true,backgroundColor = 0xFFFFFF)
 @Composable
 fun EventRectanglePreview() {
-    Box (modifier = Modifier
-        .width(50.dp)
-        .height(50.dp),
-        contentAlignment = Alignment.CenterStart
-    )
-    {
+    CRA2goTheme {
+        Box (modifier = Modifier
+            .width(200.dp)
+            .height(50.dp),
+            contentAlignment = Alignment.CenterStart
+        )
+        {
 
-        //RotationRectangle(rotations = TestEvents.exampleFlight, cellWidth = 50.dp)
+            RotationRectangle(rotation = TestEvents.exampleRotation, cellWidth = 50.dp)
+        }
     }
+
 
 }
 
