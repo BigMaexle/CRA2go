@@ -87,6 +87,8 @@ fun createDisplayEventList(events: List<DutyEvent>, currentMonth: Calendar): Lis
 
     val groupedEvents = groupEventsByRotationID(events)
 
+    return listOf(groupedEvents)
+
 }
 
 fun isOnCurrentDay(event: DutyEvent, dayofmonth: Calendar): Boolean {
