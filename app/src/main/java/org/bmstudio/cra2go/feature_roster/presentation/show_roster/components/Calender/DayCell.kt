@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.bmstudio.cra2go.feature_roster.domain.model.DisplayEvent
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
 import org.bmstudio.cra2go.ui.theme.CRA2goTheme
@@ -39,13 +40,12 @@ import java.util.Date
 
 @Composable
 fun DayCell(
-    isCurrentMonth: Boolean,
     currentMonth: Calendar,
     day: Int,
     eventsForDay: List<DutyEvent>,
     selectedEvents: MutableState<List<DutyEvent>>,
     selectedDay:MutableState<Calendar>,
-    activeRotations: List<List<DutyEvent>>) {
+    activeDutyEvents: List<List<DisplayEvent>>) {
     //initial height set at 0.dp
     var cellWidth by remember { mutableStateOf(0.dp) }
 
@@ -58,18 +58,15 @@ fun DayCell(
     val minimumdays = currentMonth.getActualMinimum(Calendar.DAY_OF_MONTH)
 
     if (day < minimumdays-1 || day > maximumdays-1) {
+        //DayCell is not in active Month (PaddingDays)
         return
     }
 
+    //establish Calender, current Day, Time: Midnight
     val daycalender = Calendar.getInstance().apply { time = currentMonth.time }
     daycalender.set(Calendar.DAY_OF_MONTH, day+1)
     daycalender.set(Calendar.HOUR_OF_DAY, 0)
     daycalender.set(Calendar.MINUTE, 0)
-
-    val background_color = if (isSameDay(
-            day = daycalender,
-            selectedDay = selectedDay.value))
-        Color.Transparent else Color.Transparent
 
     Box(
         modifier = Modifier
@@ -84,7 +81,7 @@ fun DayCell(
                     it.size.width.toDp()
                 }
             }
-            .background(background_color)
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -119,25 +116,13 @@ fun DayCell(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            for (rotation in activeRotations) {
+            for (events in activeDutyEvents) {
 
-
-
-                    if (!isMonday(daycalender)){
-                    if (rotation_starts_at_day(rotation, daycalender)){
-                    RotationRectangle(
-                        rotation = rotation,
+                //Display Event Rectangle
+                    EventRectangle(
+                        events = events,
                         cellWidth = cellWidth
-                    )}}
-
-                    if (isMonday(daycalender)){
-
-                        val stripped_rotation = strip_rotation_to_start_Monday_Midnight(rotation, daycalender)
-
-                        RotationRectangle(
-                            rotation = stripped_rotation,
-                            cellWidth = cellWidth)
-                    }
+                    )
 
             }
 
@@ -234,13 +219,12 @@ fun OneFlightDayCellPreview(){
     CRA2goTheme {
 
         DayCell(
-            isCurrentMonth = true,
             currentMonth = Calendar.getInstance(),
             day = 0,
             eventsForDay = listOf(),
             selectedEvents = remember { mutableStateOf(listOf()) },
             selectedDay = remember { mutableStateOf(Calendar.getInstance()) },
-            activeRotations = listOf(listOf(TestEvents.exampleFlight)),
+            activeDutyEvents = listOf(listOf()),
         )
 
     }
@@ -254,13 +238,12 @@ fun RotationFlightDayCellPreview(){
     CRA2goTheme {
 
         DayCell(
-            isCurrentMonth = true,
             currentMonth = Calendar.getInstance(),
             day = 0,
             eventsForDay = listOf(),
             selectedEvents = remember { mutableStateOf(listOf()) },
             selectedDay = remember { mutableStateOf(Calendar.getInstance()) },
-            activeRotations = listOf(listOf(TestEvents.exampleFlight)),
+            activeDutyEvents = listOf(listOf()),
         )
 
     }

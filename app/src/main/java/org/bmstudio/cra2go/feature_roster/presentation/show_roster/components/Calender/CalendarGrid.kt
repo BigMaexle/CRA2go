@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.bmstudio.cra2go.feature_roster.domain.model.DisplayEvent
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
 import org.bmstudio.cra2go.ui.theme.CRA2goTheme
@@ -23,7 +24,6 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
                  selectedDateEvents: MutableState<List<DutyEvent>>,
                  selectedDay: MutableState<Calendar>) {
 
-    val groupedEvents = groupEventsByRotationID(events)
 
 
     val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -35,6 +35,7 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
     val paddingDaysAfter = List((7 - (startingDayOfWeek + daysInMonth) % 7) % 7) { -1 }
     val allDays = paddingDaysBefore + days + paddingDaysAfter
 
+    val eventsToBeDisplayed = createDisplayEventList(events,currentMonth)
 
 
     LazyVerticalGrid(
@@ -43,11 +44,6 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
         items(allDays.size) { index ->
 
             val day = allDays[index]
-
-            //convert the index to a day of the month
-            val dayofmonth = Calendar.getInstance().apply { time = firstDayOfMonth.time }
-                .apply { add(Calendar.DAY_OF_MONTH, day) }
-
 
             val eventsForDay = events.filter { event ->
                 val eventcal = Calendar.getInstance().apply { time = event.day }
@@ -60,32 +56,37 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
                         eventcal.get(Calendar.DAY_OF_MONTH) == dayofmonth.get(Calendar.DAY_OF_MONTH)
             }
 
-            // is current in active month
-            val isCurrentMonth = currentMonth.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH)
-
-            val activeRotations = groupedEvents.filter { eventList ->
-                eventList.any { event ->
-
-                    isOnCurrentDay(event, dayofmonth)
-
-
-
-                }
-            }
 
 
             DayCell(
-                isCurrentMonth = isCurrentMonth,
                 currentMonth = currentMonth,
                 day = day,
                 eventsForDay = eventsForDay,
                 selectedEvents = selectedDateEvents,
                 selectedDay = selectedDay,
-                activeRotations = activeRotations
+                activeDutyEvents = eventsToBeDisplayed[index]
             )
 
         }
     }
+}
+
+fun createDisplayEventList(events: List<DutyEvent>, currentMonth: Calendar): List<List<List<DisplayEvent>>> {
+
+
+    //THIS IS WHERE THE MAGIC HAPPENS.
+    //Input: Random List of DutyEvents and the current Month
+
+    // Output: A List of events to be displayed.
+    // Step 1. Sort all DutyEvents to Rotations, to be displayed as one -> rotations: List<DisplayEvents>
+    // All Rotations that begin at Day index are in List so e[index] = List<rotation>
+    // All in a List e
+
+    // Step one,
+    // Take a List: DUTYEVENTS create a List:DISPLAYEVENTS rotations = same rotationID, if you have no rotID, you are single Event
+
+    val groupedEvents = groupEventsByRotationID(events)
+
 }
 
 fun isOnCurrentDay(event: DutyEvent, dayofmonth: Calendar): Boolean {

@@ -163,11 +163,6 @@ fun BottomDutyPlanBar(
             },
             icon = { Icon(imageVector = Icons.AutoMirrored.Filled.List, contentDescription = "List")}
         )
-//        NavigationBarItem(
-//            selected = false,
-//            onClick = { /*TODO*/ },
-//            icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "List")}
-//        )
     }
     
 }

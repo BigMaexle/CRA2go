@@ -1,6 +1,7 @@
 package org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.Calender
 
 import android.util.Log
+import android.view.Display
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import org.bmstudio.cra2go.feature_roster.domain.model.DisplayEvent
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
 import java.util.Calendar
@@ -33,46 +35,27 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun EventRectangle( events: List<DutyEvent>, cellWidth: Dp) {
+fun EventRectangle( events: List<DisplayEvent>, cellWidth: Dp) {
 
     val TAG = "EventRectangle"
 
-    val earliestEvent = earliestEventWithValidTime(events)
-    val latestEvent = latestEventWithValidTime(events)
+    val earliestEvent = events.minByOrNull { it.startTime }
+    val latestEvent = events.maxByOrNull { it.endTime }
 
     if (earliestEvent == null || latestEvent == null) {
-
-        if (events.size == 1 && events.first().wholeDay == true){
-            Box(
-                modifier = Modifier
-                    .requiredWidth(cellWidth)
-                    .height(10.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .border(BorderStroke(0.2.dp, Color.Black), RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .zIndex(1.0f),)
-        }
-
+        // we do not have valid events, skip
         return
     }
-
 
     val eventDuration: Int = calculateRotationDuration(
         startevent = earliestEvent,
         endevent = latestEvent
     )
 
+    val eventWidth: Dp = convert_ms_to_dp(eventDuration.toLong(), cellWidth)
 
-
-    val time_to_sunday_evening: Int = calculateTimeUntilSundayEvening(earliestEvent)
-
-    val displayable_rotation_lenth: Int = kotlin.math.min(time_to_sunday_evening, eventDuration)
-
-    val eventWidth: Dp = convert_ms_to_dp(displayable_rotation_lenth.toLong(), cellWidth)
-
-    val time_of_day_of_first_event: Float = earliestEvent.startTime!!.hours + earliestEvent.startTime.minutes / 60f
+    val time_of_day_of_first_event: Float = earliestEvent.startTime.hours + earliestEvent.startTime.minutes / 60f
     val startPosition: Dp = convert_ms_to_dp((time_of_day_of_first_event * 60 * 60 * 1000).toLong(), cellWidth)
-
     val exceeding_length: Dp = determine_exceeding_length(eventWidth, cellWidth)
 
     Box(
@@ -90,7 +73,7 @@ fun EventRectangle( events: List<DutyEvent>, cellWidth: Dp) {
 
         FillRotationBox(
             starttime = earliestEvent.startTime,
-            endtime = latestEvent.endTime!!,
+            endtime = latestEvent.endTime,
             events = events,
             cellWidth = cellWidth
         )
@@ -129,21 +112,20 @@ fun calculateTimeUntilSundayEvening(startEvent: DutyEvent): Int {
 }
 
 @Composable
-fun FillRotationBox(starttime: Date, endtime: Date, events: List<DutyEvent>, cellWidth: Dp) {
+fun FillRotationBox(starttime: Date, endtime: Date, events: List<DisplayEvent>, cellWidth: Dp) {
 
     val TAG = "FillRotationBox"
 
-    val flight_events = events.filter {
-        it.startTime != null && it.endTime != null }.sortedBy { it.startTime }
+    val sortedEvents = events.sortedBy { it.startTime }
 
-    flight_events.forEach { event ->
+    sortedEvents.forEach { event ->
 
         //calculate offset of beginning of rotationbox in .dp
-        val offset_inside_rot_box: Dp = convert_ms_to_dp(event.startTime!!.time - starttime.time, cellWidth)
+        val offset_inside_rot_box: Dp = convert_ms_to_dp(event.startTime.time - starttime.time, cellWidth)
+        val eventWidth: Dp = convert_ms_to_dp(event.endTime.time - event.startTime.time, cellWidth)
 
-        val eventWidth: Dp = convert_ms_to_dp(event.endTime!!.time - event.startTime!!.time, cellWidth)
-
-        if (event.eventCategory != "dummy") {
+        // dont display dummyevent, but all other
+        if (event.category != "dummy") {
             Box(
                 modifier = Modifier
                     .absoluteOffset(x = offset_inside_rot_box)
@@ -156,13 +138,14 @@ fun FillRotationBox(starttime: Date, endtime: Date, events: List<DutyEvent>, cel
     }
 
 
-    val largeGaps = findLargeGaps(flight_events, 18)
+    val largeGaps = findLargeGaps(sortedEvents, 18)
 
     largeGaps.forEach { gap ->
         //calculate offset of beginning of rotationbox in .dp
 
-        val offset_inside_rot_box: Dp = ( convert_ms_to_dp(gap.second.startTime!!.time - starttime.time, cellWidth) +
-                convert_ms_to_dp(gap.first.startTime!!.time - starttime.time, cellWidth) ) * 0.5f
+
+        val offset_inside_rot_box: Dp = ( convert_ms_to_dp(gap.second.startTime.time - starttime.time, cellWidth) +
+                convert_ms_to_dp(gap.first.startTime.time - starttime.time, cellWidth) ) * 0.5f
 
 
         val displayed_hotel = determine_hotel(gap.first, gap.second)
@@ -179,33 +162,29 @@ fun FillRotationBox(starttime: Date, endtime: Date, events: List<DutyEvent>, cel
 
 }
 
-fun determine_hotel(first: DutyEvent, second: DutyEvent): String? {
+fun determine_hotel(first: DisplayEvent, second: DisplayEvent): String {
 
-    if (first.startTime!!.time < second.startTime!!.time){
-        return first.endLocation
+    return if (first.startTime.time < second.startTime.time){
+        first.endLocation
     } else {
-        return second.endLocation
-
+        second.endLocation
     }
 
 }
 
-fun findLargeGaps(events: List<DutyEvent>, thresholdHours: Long): List<Pair<DutyEvent, DutyEvent>> {
-    val largeGaps = mutableListOf<Pair<DutyEvent, DutyEvent>>()
+fun findLargeGaps(events: List<DisplayEvent>, thresholdHours: Long): List<Pair<DisplayEvent, DisplayEvent>> {
+    val largeGaps = mutableListOf<Pair<DisplayEvent,DisplayEvent>>()
     val thresholdMillis = TimeUnit.HOURS.toMillis(thresholdHours)
 
     for (i in 0 until events.size - 1) {
         val currentEvent = events[i]
         val nextEvent = events[i + 1]
 
-        // Ensure both current and next events have valid startTime and endTime
-        if (currentEvent.endTime != null && nextEvent.startTime != null) {
-            val gapMillis = nextEvent.startTime.time - currentEvent.endTime.time
-            if (gapMillis > thresholdMillis) {
-                largeGaps.add(Pair(currentEvent, nextEvent))
-            }
+        val gapMillis = nextEvent.startTime.time - currentEvent.endTime.time
+        if (gapMillis > thresholdMillis) {
+            largeGaps.add(Pair(currentEvent, nextEvent))
         }
-    }
+        }
     return largeGaps
 }
 
@@ -219,22 +198,20 @@ fun convert_ms_to_dp(ms: Long, cellWidth: Dp): Dp {
 
 
 //determine starttime of first event
-fun earliestEventWithValidTime(events: List<DutyEvent>): DutyEvent? {
-    return events.filter { it.startTime != null }  // Filter out events with no valid time
-        .minByOrNull { it.startTime!! }   // Find the event with the minimum time
+fun earliestEvent(events: List<DisplayEvent>): DisplayEvent? {
+    return events.minByOrNull { it.startTime}   // Find the event with the minimum time
 }
 
 //determine endtime of last event
-fun latestEventWithValidTime(events: List<DutyEvent>): DutyEvent? {
-    return events.filter { it.endTime != null }  // Filter out events with no valid time
-        .maxByOrNull { it.endTime!! }   // Find the event with the maximum time
+fun latestEvent(events: List<DisplayEvent>): DisplayEvent? {
+    return events.maxByOrNull { it.endTime }   // Find the event with the maximum time
 }
 
 @Preview (showBackground = true, backgroundColor = 0xFFFFFF, widthDp = 50)
 @Composable
 fun MultiEventRectanglePreview() {
 
-    EventRectangle( events = TestEvents.exampleRotation, cellWidth = 48.dp)
+    //EventRectangle( events = TestEvents.exampleRotation, cellWidth = 48.dp)
 
 }
 
@@ -242,6 +219,6 @@ fun MultiEventRectanglePreview() {
 @Composable
 fun SingleEventRectanglePreview() {
 
-    EventRectangle( events = listOf(TestEvents.exampleFlight), cellWidth = 48.dp)
+    //EventRectangle( events = listOf(TestEvents.exampleFlight), cellWidth = 48.dp)
 
 }

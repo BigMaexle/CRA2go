@@ -125,8 +125,6 @@ fun Weekdays() {
 @Composable
 fun CalendarViewPreview() {
 
-
-
     CalendarView(
         events = TestEvents.exampleRotation,
         padding = PaddingValues(0.dp)
