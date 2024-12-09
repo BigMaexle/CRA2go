@@ -32,6 +32,7 @@ import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
 import java.util.Calendar
 import java.util.Date
+import java.util.Dictionary
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -126,6 +127,7 @@ fun FillRotationBox(starttime: Date, endtime: Date, events: List<DisplayEvent>, 
 
         // dont display dummyevent, but all other
         if (event.category != "dummy") {
+
             Box(
                 modifier = Modifier
                     .absoluteOffset(x = offset_inside_rot_box)
@@ -138,21 +140,21 @@ fun FillRotationBox(starttime: Date, endtime: Date, events: List<DisplayEvent>, 
     }
 
 
-    val largeGaps = findLargeGaps(sortedEvents, 18)
+    val largeGaps = findLargeGaps(sortedEvents, 12)
 
     largeGaps.forEach { gap ->
         //calculate offset of beginning of rotationbox in .dp
 
 
         val offset_inside_rot_box: Dp = ( convert_ms_to_dp(gap.second.startTime.time - starttime.time, cellWidth) +
-                convert_ms_to_dp(gap.first.startTime.time - starttime.time, cellWidth) ) * 0.5f
+                convert_ms_to_dp(gap.first.endTime.time - starttime.time, cellWidth) ) * 0.5f
 
 
         val displayed_hotel = determine_hotel(gap.first, gap.second)
 
         Text(text = displayed_hotel.toString(),
             modifier = Modifier
-                .absoluteOffset(x = offset_inside_rot_box, y = (-1).dp),
+                .absoluteOffset(x = offset_inside_rot_box-9.dp, y = (-1).dp),
             textAlign = TextAlign.Center,
 
             fontSize = 8.sp)
@@ -196,16 +198,6 @@ fun convert_ms_to_dp(ms: Long, cellWidth: Dp): Dp {
 }
 
 
-
-//determine starttime of first event
-fun earliestEvent(events: List<DisplayEvent>): DisplayEvent? {
-    return events.minByOrNull { it.startTime}   // Find the event with the minimum time
-}
-
-//determine endtime of last event
-fun latestEvent(events: List<DisplayEvent>): DisplayEvent? {
-    return events.maxByOrNull { it.endTime }   // Find the event with the maximum time
-}
 
 @Preview (showBackground = true, backgroundColor = 0xFFFFFF, widthDp = 50)
 @Composable

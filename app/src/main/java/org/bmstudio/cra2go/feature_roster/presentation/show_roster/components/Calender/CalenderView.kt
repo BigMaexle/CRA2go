@@ -79,7 +79,7 @@ fun CalendarView(
             ) {
                 // Display month and year
                 Text(
-                    text = "${month.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())} ${month.get(Calendar.YEAR)}",
+                    text = "${month.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH)} ${month.get(Calendar.YEAR)}",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 16.dp),
                     textAlign = TextAlign.Center
