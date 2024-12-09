@@ -5,9 +5,9 @@ import org.bmstudio.cra2go.feature_roster.domain.utils.DateConverter
 import org.bmstudio.cra2go.feature_roster.domain.utils.EventAttributes
 
 object TestEvents {
-    val dep_time = DateConverter.convertToTimestamp("2024-12-21T02:00:00Z")
-    val arr_time = DateConverter.convertToTimestamp("2024-12-21T10:00:00Z")
-    val day = DateConverter.convertfromDateStamp("2024-12-21Z")
+    val dep_time = DateConverter.convertToTimestamp("2024-12-27T02:00:00Z")
+    val arr_time = DateConverter.convertToTimestamp("2024-12-27T10:00:00Z")
+    val day = DateConverter.convertfromDateStamp("2024-12-27Z")
 
     val test_rotation: EventAttributes = EventAttributes(
         rotationId = "1",
@@ -31,15 +31,15 @@ object TestEvents {
     )
 
     val exampleFlight2: DutyEvent = DutyEvent(
-        day = DateConverter.convertfromDateStamp("2024-12-22Z"),
+        day = DateConverter.convertfromDateStamp("2024-12-28Z"),
         _links = null,
         endLocation = "DWC",
         startLocation = "PVG",
         wholeDay = false,
         eventAttributes = test_rotation,
         eventDetails = "LH8001",
-        startTime = DateConverter.convertToTimestamp("2024-12-22T20:00:00Z"),
-        endTime = DateConverter.convertToTimestamp("2024-12-23T08:00:00Z"),
+        startTime = DateConverter.convertToTimestamp("2024-12-28T20:00:00Z"),
+        endTime = DateConverter.convertToTimestamp("2024-12-29T08:00:00Z"),
         endTimeZoneOffset = -360,
         eventCategory = "flight",
         eventType = "FLIGHT",
@@ -47,18 +47,18 @@ object TestEvents {
     )
 
     val exampleFlight3: DutyEvent = DutyEvent(
-        day = DateConverter.convertfromDateStamp("2024-12-25Z"),
+        day = DateConverter.convertfromDateStamp("2025-01-01Z"),
         _links = null,
-        endLocation = "PVG",
+        endLocation = "DWC",
         startLocation = "FRA",
         wholeDay = false,
         eventAttributes = test_rotation,
         eventDetails = "LH8001",
-        startTime = DateConverter.convertToTimestamp("2024-12-25T08:00:00Z"),
-        endTime = DateConverter.convertToTimestamp("2024-12-25T12:00:00Z"),
+        startTime = DateConverter.convertToTimestamp("2025-01-01T08:00:00Z"),
+        endTime = DateConverter.convertToTimestamp("2025-01-01T12:00:00Z"),
         endTimeZoneOffset = -360,
         eventCategory = "flight",
-        eventType = "X",
+        eventType = "FLIGHT",
         startTimeZoneOffset = -120,
     )
 
@@ -97,6 +97,7 @@ object TestEvents {
 
     val exampleRotation: List<DutyEvent> = listOf(
         exampleFlight,
+        exampleFlight2,
         exampleFlight3
     )
 

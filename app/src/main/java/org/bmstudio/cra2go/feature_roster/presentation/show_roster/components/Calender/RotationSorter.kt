@@ -4,7 +4,7 @@ import org.bmstudio.cra2go.feature_roster.domain.model.DisplayEvent
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import java.util.Calendar
 
-fun groupEventsByRotationID(events: List<DutyEvent>): List<List<DisplayEvent>> {
+fun groupEventsByRotationID(events: List<DutyEvent>): List<List<DutyEvent>> {
     val groupedEvents = events
         .filter { it.eventAttributes?.rotationId != null }
         .groupBy { it.eventAttributes?.rotationId }
@@ -23,26 +23,7 @@ fun groupEventsByRotationID(events: List<DutyEvent>): List<List<DisplayEvent>> {
 
     //Now i have grouped DutyEventLists
 
-    val dRotList = mutableListOf(mutableListOf<DisplayEvent>())
-
-    groupedEvents.forEach { rot ->
-
-        //create DisplayEventList
-        val dRotation = mutableListOf<DisplayEvent>()
-        rot.forEach { dutyevent ->
-            val displayEvent = createDisplayEventFromDutyEvent(dutyevent)
-            if (displayEvent != null) {
-                dRotation.add(displayEvent)
-            }
-        }
-
-        if(dRotation.isNotEmpty()){
-            dRotList.add(dRotation)
-        }
-
-    }
-
-    return dRotList
+    return groupedEvents
 
 }
 
