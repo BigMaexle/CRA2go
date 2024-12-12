@@ -10,8 +10,6 @@ class SaveNewTokenUseCase(
 
     suspend operator fun invoke(newToken: TokenResponse) {
 
-        Log.d("SAVEUSECASE", "HABE NEUEN TOKEN")
-
         accessTokenRepository.savenewAcessToken(newToken)
 
     }

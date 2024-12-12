@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import org.bmstudio.cra2go.feature_roster.domain.model.DisplayEvent
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.TestEvents.TestEvents
@@ -81,6 +82,7 @@ fun DayCell(
                     it.size.width.toDp()
                 }
             }
+            .zIndex(0f)
             .background(Color.Transparent)
     ) {
         Column(

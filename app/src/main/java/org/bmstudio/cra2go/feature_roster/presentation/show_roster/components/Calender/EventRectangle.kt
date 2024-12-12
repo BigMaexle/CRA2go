@@ -66,7 +66,8 @@ fun EventRectangle( events: List<DisplayEvent>, cellWidth: Dp) {
             .height(10.dp)
             .clip(RoundedCornerShape(2.dp))
             .border(BorderStroke(0.2.dp, Color.Black), RoundedCornerShape(2.dp))
-            .zIndex(1.0f),
+            .zIndex(2.0f),
+            //.background(color = MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.CenterStart
 
     )
@@ -92,25 +93,6 @@ fun determine_exceeding_length(eventWidth: Dp, cellWidth: Dp): Dp {
 
 
 
-fun calculateTimeUntilSundayEvening(startEvent: DutyEvent): Int {
-    if (startEvent.startTime == null) return 0
-
-    val cal_startEvent = Calendar.getInstance().apply { time = startEvent.startTime }
-
-    if (cal_startEvent.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-        cal_startEvent.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-        if (cal_startEvent.time.time < startEvent.startTime.time) {
-            cal_startEvent.add(Calendar.DAY_OF_MONTH, 7)
-        }
-    }
-
-    cal_startEvent.set(Calendar.HOUR_OF_DAY,23)
-    cal_startEvent.set(Calendar.MINUTE,59)
-    cal_startEvent.set(Calendar.SECOND,59)
-
-    return (cal_startEvent.time.time - startEvent.startTime.time).toInt()
-
-}
 
 @Composable
 fun FillRotationBox(starttime: Date, endtime: Date, events: List<DisplayEvent>, cellWidth: Dp) {
@@ -134,6 +116,7 @@ fun FillRotationBox(starttime: Date, endtime: Date, events: List<DisplayEvent>, 
                     .width(eventWidth)
                     .height(20.dp)
                     .background(MaterialTheme.colorScheme.primary)
+                    .zIndex(2f)
             )
         }
 
