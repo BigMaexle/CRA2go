@@ -456,11 +456,7 @@ fun convert_Duty_Event_To_Display_Event(event: DutyEvent): DisplayEvent? {
 
     if (event.eventType == "GROUNDEVENT"){
         if (event.startTime == null || event.endTime == null) {
-            Log.w(TAG,"invalid Start/EndTimes of Flight")
-            return null
-        }
-        if (event.endLocation == null || event.startLocation == null){
-            Log.w(TAG,"invalid Start/EndTimes of Flight")
+            Log.w(TAG,"invalid Start/EndTimes of GroundEvent")
             return null
         }
 
