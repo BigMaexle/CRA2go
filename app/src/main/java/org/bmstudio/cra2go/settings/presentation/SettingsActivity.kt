@@ -24,91 +24,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.AndroidEntryPoint
 import org.bmstudio.cra2go.R
 import org.bmstudio.cra2go.ui.theme.CRA2goTheme
 
+@AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CRA2goTheme {
-                SettingsScreen(
-                    onNavigate = { destination ->
-                        when (destination) {
-                            "General Settings" -> startActivity(Intent(this, GeneralSettingsActivity::class.java))
-                            "Profile" -> startActivity(Intent(this, ProfileActivity::class.java))
-                            "About" -> startActivity(Intent(this, AboutActivity::class.java))
-                        }
-                    },
-                    onBack = { finish() } // Callback to finish the activity
-                )
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    SettingsScreen(onBack = {finish()})
             }
 
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SettingsScreen(onNavigate: (String) -> Unit, onBack: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { (onBack()) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }},
-                title = { Text("Settings") }
-            )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            item {
-                SettingsItem(
-                    title = "General Settings",
-                    iconRes = Icons.Default.Settings,
-                    onClick = { onNavigate("General Settings") }
-                )
-            }
-            item {
-                SettingsItem(
-                    title = "Profile",
-                    iconRes = Icons.Default.AccountCircle,
-                    onClick = { onNavigate("Profile") }
-                )
-            }
-            item {
-                SettingsItem(
-                    title = "About",
-                    iconRes = Icons.Default.Info,
-                    onClick = { onNavigate("About") }
-                )
-            }
-        }
-    }
-}
-
-
-
-@Preview (showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    CRA2goTheme {
-    SettingsScreen(
-        onNavigate = { destination ->
-            when (destination) {
-                "General Settings" -> {}
-                "Profile" -> {}
-                "About" -> {}
-            }
-        },
-        onBack = {}
-    )}
-}
+    }}}

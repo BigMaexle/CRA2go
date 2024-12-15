@@ -46,8 +46,10 @@ import java.util.Locale
 @Composable
 fun CalendarView(
     events: List<DutyEvent>,
+    filter: List<Boolean>,
     padding: PaddingValues
 )  {
+
         // MutableState for current month
         val currentMonth = remember { mutableStateOf(Calendar.getInstance()) }
     
@@ -95,7 +97,7 @@ fun CalendarView(
                 // Calendar grid with events
                 val daysInMonth = month.getActualMaximum(Calendar.DAY_OF_MONTH)
                 val days = (1..daysInMonth).toList()
-                CalendarGrid(events, month, selectedDateEvents,selectedDay)
+                CalendarGrid(events, month, selectedDateEvents,selectedDay,filter)
 
                 // Display events for selected date at the bottom
                 EventList(selectedDateEvents.value,selectedDay.value)
@@ -127,7 +129,8 @@ fun CalendarViewPreview() {
 
     CalendarView(
         events = TestEvents.exampleRotation,
-        padding = PaddingValues(0.dp)
+        padding = PaddingValues(0.dp),
+        filter = listOf(true,true,true,true)
     )
 }
 

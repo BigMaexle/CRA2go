@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.bmstudio.cra2go.feature_roster.domain.model.DutyEvent
 import org.bmstudio.cra2go.feature_roster.domain.utils.DateConverter
+import org.bmstudio.cra2go.feature_roster.presentation.show_roster.components.EventDetailCard.EventDetailCard
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -100,7 +101,8 @@ fun verticalCalender(
                             eventDate.time = event.day
                             areDatesOnSameDay(event.day,currentDate)
                         }.forEach { event ->
-                            DutyEventItem(dutyevent = event)
+                            DutyEventItem(
+                                dutyevent = event )
                         }
                     }
                 }

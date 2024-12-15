@@ -13,9 +13,12 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -77,8 +80,12 @@ fun DutyEventScreen(
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = title,modifier = Modifier.fillMaxWidth(1f),
-                        textAlign = TextAlign.Center) },
+                    title = {
+                        Text(
+                            text = title,
+                            modifier = Modifier.fillMaxWidth(1f),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleLarge) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {
@@ -116,6 +123,7 @@ fun DutyEventScreen(
                     CalendarView(
                         events = state.events,
                         padding = innerPadding,
+                        filter = viewModel.getEventFilters()
                     )
                 }
                 is ViewState.ListViewState -> {

@@ -40,11 +40,6 @@
             android:exported="true"
             android:launchMode="singleTop">
         </activity>
-        <activity
-            android:name=".settings.presentation.GeneralSettingsActivity"
-            android:exported="true"
-            android:launchMode="singleTop">
-        </activity>
 
     </application>
 

@@ -1,10 +1,13 @@
 package org.bmstudio.cra2go.di
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.bmstudio.cra2go.feature_roster.data.data_source.DutyEventDatabase
 import org.bmstudio.cra2go.feature_roster.data.repository.CRARepositoryImp
@@ -20,6 +23,9 @@ import org.bmstudio.cra2go.login.domain.repository.AccessTokenRepository
 import org.bmstudio.cra2go.login.domain.use_cases.LoginToCRAUseCase
 import org.bmstudio.cra2go.login.domain.use_cases.LoginUseCases
 import org.bmstudio.cra2go.login.domain.use_cases.SaveNewTokenUseCase
+import org.bmstudio.cra2go.settings.data.AppCache
+import org.bmstudio.cra2go.settings.data.AppSettings
+import org.bmstudio.cra2go.settings.data.settingsDataStore
 import javax.inject.Singleton
 
 @Module
@@ -55,6 +61,7 @@ object AppModule {
         )
     }
 
+
     @Provides
     @Singleton
     fun provideCRARepository(db: DutyEventDatabase): CRARepository {
@@ -78,5 +85,8 @@ object AppModule {
         return AccessTokenRepositoryImp(null)
     }
 
-
+    @Provides
+    @Singleton
+    fun provideAppSettingsDataStore(@ApplicationContext context: Context): DataStore<AppSettings> =
+        context.settingsDataStore
 }

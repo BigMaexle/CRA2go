@@ -26,27 +26,3 @@ fun groupEventsByRotationID(events: List<DutyEvent>): List<List<DutyEvent>> {
     return groupedEvents
 
 }
-
-fun createDisplayEventFromDutyEvent(dutyevent: DutyEvent): DisplayEvent? {
-
-    if (dutyevent.wholeDay == true){
-        //WHOLE DAY EVENT, create a DisplayEvent
-        if (dutyevent.day == null) return null
-
-        val c_start = Calendar.getInstance()
-        c_start.time = dutyevent.day
-        c_start.set(Calendar.HOUR_OF_DAY,0)
-        c_start.set(Calendar.MINUTE,0)
-
-        val c_end = Calendar.getInstance()
-        c_start.time = dutyevent.day
-        c_start.set(Calendar.HOUR_OF_DAY,23)
-        c_start.set(Calendar.MINUTE,59)
-
-
-
-    }
-
-
-    return null
-}

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">CRA2go</string>
+    <string name="settings">Settings</string>
+    <string name="Airline">Airline</string>
+    <string name="drawable_events">Calender Display Settings</string>
+    <string name="enter_airline">Airline Employed</string>
+    <string name="enter">Enter</string>
+    <string name="eventFiltertitle">Calender Display Filter</string>
+    <array name= "eventFilter">
+        <item>Flights</item>
+        <item>Groundevents</item>
+        <item>Vacation</item>
+        <item>OFF / FREE</item>
+    </array>
+    <string name="deleteall">Delete All Duty Events</string>
+    <string name="AppNeedsRestart">Note: app needs to be restarted for changes to take effect.</string>
 </resources>

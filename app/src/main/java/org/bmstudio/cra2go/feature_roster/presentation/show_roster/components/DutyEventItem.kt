@@ -1,5 +1,6 @@
 package org.bmstudio.cra2go.feature_roster.presentation.show_roster.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,13 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +32,7 @@ import java.util.Date
 
 
 @Composable
-fun DutyEventItem(dutyevent: DutyEvent) {
+fun DutyEventItem(dutyevent: DutyEvent,onClick: () -> Unit = {}) {
 
 
     if (dutyevent.eventDetails == "X") {
@@ -38,10 +43,10 @@ fun DutyEventItem(dutyevent: DutyEvent) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(5.dp),
     ) {
         Column(
-            Modifier.padding(8.dp)
+            Modifier.padding(12.dp)
         ) {
             if (dutyevent.eventType == "BRIEFING"){
 

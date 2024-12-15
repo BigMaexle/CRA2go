@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.first
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class ForceLogin (val context: Context){
-    val FORCELOGIN = booleanPreferencesKey("force_login")
+    private val forcelogin = booleanPreferencesKey("force_login")
     suspend fun switch(){
         context.dataStore.edit { settings ->
-            settings[FORCELOGIN] = !(settings[FORCELOGIN] ?: false)
+            settings[forcelogin] = !(settings[forcelogin] ?: false)
         }
     }
     suspend fun get(): Boolean {
         val preferences = context.dataStore.data.first()
-        return preferences[FORCELOGIN] ?: false
+        return preferences[forcelogin] ?: false
 
     }
 }

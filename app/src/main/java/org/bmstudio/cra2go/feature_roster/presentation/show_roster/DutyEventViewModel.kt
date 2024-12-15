@@ -1,6 +1,7 @@
 package org.bmstudio.cra2go.feature_roster.presentation.show_roster
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -14,13 +15,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.bmstudio.cra2go.feature_roster.domain.use_cases.DutyEventUseCases
 import org.bmstudio.cra2go.login.domain.use_cases.LoginUseCases
+import org.bmstudio.cra2go.settings.data.AppCache
+import org.bmstudio.cra2go.settings.data.AppSettings
 import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class DutyEventViewModel @Inject constructor(
     private val dutyEventUseCases: DutyEventUseCases,
-    private val loginUseCases: LoginUseCases
+    private val appCache: AppCache
 ) : ViewModel() {
 
     private val _state = mutableStateOf(DutyEventsStates())
@@ -34,6 +37,17 @@ class DutyEventViewModel @Inject constructor(
 
     init {
         getEvents()
+        viewModelScope.launch {
+            appCache.state.collect{ appSettings ->
+                // listening to changes in the settings
+                // convert it to other state and create representation in the UI
+                //Log.d(TAG, "appSettings: $appSettings")
+            }
+        }
+        viewModelScope.launch {
+            // initial loading in the data
+            appCache.loadInCache()
+        }
     }
 
 
@@ -72,5 +86,16 @@ class DutyEventViewModel @Inject constructor(
                 )
             }.launchIn(viewModelScope)
     }
+
+    fun getEventFilters(): List<Boolean>{
+
+        return appCache.state.value.eventsdisplayfilter
+
+    }
+
+    companion object {
+        const val TAG = "DutyEventViewModel"
+    }
+
 
 }

@@ -61,14 +61,9 @@ fun MenuItems(
         }
 
 
-
-
-
         val scope = rememberCoroutineScope()
 
 
-
-        var showDeleteDialog by remember { mutableStateOf(false) }
         var showaboutdialog by remember { mutableStateOf(false) }
 
         ModalDrawerSheet (
@@ -76,14 +71,6 @@ fun MenuItems(
                 .fillMaxWidth(0.6f)
         ) {
 
-            ConfirmDelete(
-                onConfirm = { viewModel.viewModelScope.launch {
-                    viewModel.onEvent(DutyEventsEvent.DeleteAllEvents)
-                    showDeleteDialog = false
-                } },
-                onDismiss = { showDeleteDialog = false },
-                showDialog = showDeleteDialog
-            )
 
             AboutDialog(
                 showDialog = showaboutdialog,
@@ -114,14 +101,6 @@ fun MenuItems(
                         }
                    })
 
-                NavigationDrawerItem(
-                    icon = { Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete") },
-                    label = { Text(text = "Delete Duty Events") },
-                    selected = false,
-                    onClick = {
-                        showDeleteDialog = true
-                        scope.launch { drawerState.apply { close() } }
-                    })
 
                 Divider()
 

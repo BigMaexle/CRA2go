@@ -22,9 +22,11 @@ import java.util.Date
 import kotlin.math.abs
 
 @Composable
-fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
+fun CalendarGrid(events: List<DutyEvent>,
+                 currentMonth: Calendar,
                  selectedDateEvents: MutableState<List<DutyEvent>>,
-                 selectedDay: MutableState<Calendar>) {
+                 selectedDay: MutableState<Calendar>,
+                 filter: List<Boolean>) {
 
 
 
@@ -37,7 +39,7 @@ fun CalendarGrid(events: List<DutyEvent>, currentMonth: Calendar,
     val paddingDaysAfter = List((7 - (startingDayOfWeek + daysInMonth) % 7) % 7) { -1 }
     val allDays = paddingDaysBefore + days + paddingDaysAfter
 
-    val DisplayEventList = createDisplayEventList(events,currentMonth)
+    val DisplayEventList = createDisplayEventList(events,currentMonth,filter)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7)
@@ -90,7 +92,10 @@ fun find_display_events_for_day(day: Int, currentMonth: Calendar, displayEventLi
 
 }
 
-fun createDisplayEventList(events: List<DutyEvent>, currentMonth: Calendar): List<List<List<DisplayEvent>>> {
+fun createDisplayEventList(
+    events: List<DutyEvent>,
+    currentMonth: Calendar,
+    filter: List<Boolean>): List<List<List<DisplayEvent>>> {
 
     //THIS IS WHERE THE MAGIC HAPPENS.
     //Input: Random List of DutyEvents and the current Month
@@ -105,7 +110,9 @@ fun createDisplayEventList(events: List<DutyEvent>, currentMonth: Calendar): Lis
 
     val filtered_for_month_events: List<DutyEvent> = filter_events_for_month(events,currentMonth)
 
-    val groupedDutyEvents = groupEventsByRotationID(filtered_for_month_events)
+    val filtered_for_displayed_events: List<DutyEvent> = filter_events_for_display_filter(filtered_for_month_events,filter)
+
+    val groupedDutyEvents = groupEventsByRotationID(filtered_for_displayed_events)
 
     val groupedDisplayEvents: List<List<DisplayEvent>> = convert_Duty_Event_List_to_Display_Event_List(groupedDutyEvents)
 
@@ -118,6 +125,32 @@ fun createDisplayEventList(events: List<DutyEvent>, currentMonth: Calendar): Lis
 
     return indexed_Display_Rotation
 
+}
+
+fun filter_events_for_display_filter(
+    events: List<DutyEvent>,
+    filter: List<Boolean>
+): List<DutyEvent> {
+    val filtered_events = mutableListOf<DutyEvent>()
+    events.forEach { event->
+
+        if (event_is_displayed(event,filter)){
+            filtered_events.add(event)
+        }
+
+    }
+    return filtered_events
+}
+
+fun event_is_displayed(event: DutyEvent, filter: List<Boolean>): Boolean {
+
+    if (event.eventType == "FLIGHT") return filter[0]
+    if (event.eventDetails == "U") return filter[2]
+    if (event.eventDetails == "OFF") return filter[3]
+    if (event.eventDetails == "FREE") return filter [3]
+    if (event.eventType == "GROUNDEVENT") return filter [1]
+
+    return true
 }
 
 fun crop_Display_Event_List(
@@ -528,6 +561,8 @@ fun CalendarGridPreview() {
     CRA2goTheme {
         CalendarGrid(events = TestEvents.exampleRotation, currentMonth = testcal,
             selectedDateEvents = remember { mutableStateOf(listOf()) },
-            selectedDay = remember { mutableStateOf(Calendar.getInstance()) })
+            selectedDay = remember { mutableStateOf(Calendar.getInstance()) },
+            filter = listOf(true,true,true,true)
+        )
         }
 }

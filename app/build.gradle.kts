@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         applicationId = "org.bmstudio.cra2go"
         minSdk = 24
         targetSdk = 34
-        versionCode = 10
-        versionName = "0.14"
+        versionCode = 11
+        versionName = "0.15"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -143,6 +144,9 @@ dependencies {
     //DataStore
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore)
+
+    // Serilization
+    implementation(libs.kotlinx.serialization.json)
 }
 
 
